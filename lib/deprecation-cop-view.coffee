@@ -7,7 +7,7 @@ class DeprecationCopView extends ScrollView
     @div class: 'deprecation-cop pane-item', tabindex: -1, =>
       @div class: 'panel', =>
         @div class: 'panel-heading', "Deprecated calls"
-        @ul outlet: 'list', class: 'list-tree has-collapsable-children'
+        @ul outlet: 'list', class: 'list-tree has-collapsable-children padded'
 
   initialize: ({@uri}) ->
     @update()
@@ -37,7 +37,7 @@ class DeprecationCopView extends ScrollView
 
           @ul class: 'list', =>
             for stackTrace in stackTraces
-              @li class: 'list-item stack-trace padded', =>
+              @li class: 'list-item stack-trace', =>
                 @span class: 'icon icon-alert'
                 @span stackTrace.split("\n")[3].replace(/^\s*at\s*/, '')
                 @pre stackTrace
