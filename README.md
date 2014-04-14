@@ -1,5 +1,5 @@
-# deprecation-cop package
+# Deprecation Cop Atom Package
 
-A short description of your package.
+Shows a list of deprecated methods calls. Ideally it should show nothing!
 
-![A screenshot of your spankin' package](https://f.cloud.github.com/assets/69169/2290250/c35d867a-a017-11e3-86be-cd7c5bf3ff9b.gif)
+![https://github-images.s3.amazonaws.com/skitch/Deprecation_Cop_-__Users_corey_github_deprecation-cop-20140414-144618.jpg](https://github-images.s3.amazonaws.com/skitch/Deprecation_Cop_-__Users_corey_github_deprecation-cop-20140414-144618.jpg)
