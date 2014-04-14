@@ -24,7 +24,11 @@ class DeprecationCopView extends ScrollView
     'Deprecation Cop'
 
   update: ->
-    for method, {count, message, stackTraces} of Grim.getLog()
+    methodList = []
+    methodList.push [method, metadata] for method, metadata of Grim.getLog()
+    methodList.sort (a, b) -> b[1].count - a[1].count
+
+    for [method, {count, message, stackTraces}] in methodList
       @list.append $$ ->
         @li class: 'list-nested-item collapsed', =>
           @div class: 'list-item', =>
