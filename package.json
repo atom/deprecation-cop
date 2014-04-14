@@ -9,7 +9,7 @@
     "atom": ">0.50.0"
   },
   "dependencies": {
-    "grim": "*",
+    "grim": "0.7.0",
     "underscore-plus": "^1.0.0"
   }
 }
