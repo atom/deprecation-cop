@@ -11,7 +11,6 @@ class DeprecationCopView extends ScrollView
 
   initialize: ({@uri}) ->
     @update()
-    super()
     @on 'click', '.list-nested-item', -> $(this).toggleClass('collapsed')
 
   destroy: ->
