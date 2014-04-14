@@ -1,8 +1,8 @@
-{$$, View} = require 'atom'
+{$, $$, ScrollView} = require 'atom'
 Grim = require 'grim'
 
 module.exports =
-class DeprecationCopView extends View
+class DeprecationCopView extends ScrollView
   @content: ->
     @div class: 'deprecation-cop pane-item', tabindex: -1, =>
       @div class: 'tool-panel padded', =>
