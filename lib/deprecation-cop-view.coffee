@@ -11,7 +11,8 @@ class DeprecationCopView extends ScrollView
 
   initialize: ({@uri}) ->
     @update()
-    @on 'click', '.list-nested-item', -> $(this).toggleClass('collapsed')
+    @subscribe this, 'click', '.list-nested-item', -> $(this).toggleClass('collapsed')
+    @subscribe Grim, 'updated', => @update()
 
   destroy: ->
     @detach()
@@ -27,6 +28,7 @@ class DeprecationCopView extends ScrollView
     methodList.push [method, metadata] for method, metadata of Grim.getLog()
     methodList.sort (a, b) -> b[1].count - a[1].count
 
+    @list.empty()
     for [method, {count, message, stackTraces}] in methodList
       @list.append $$ ->
         @li class: 'list-nested-item collapsed', =>
