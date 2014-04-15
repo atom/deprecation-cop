@@ -8,13 +8,18 @@ class DeprecationCopView extends ScrollView
   @content: ->
     @div class: 'deprecation-cop pane-item', tabindex: -1, =>
       @div class: 'panel', =>
-        @div class: 'panel-heading', "Deprecated calls"
+        @div class: 'panel-heading', =>
+          @div class: 'btn-toolbar pull-right', =>
+            @div class: 'btn-group', =>
+              @button outlet: 'refreshButton', class: 'btn refresh', 'Refresh'
+          @span "Deprecated calls"
         @ul outlet: 'list', class: 'list-tree has-collapsable-children padded'
 
   initialize: ({@uri}) ->
     @update()
     @subscribe this, 'click', '.list-nested-item', -> $(this).toggleClass('collapsed')
-    @subscribe Grim, 'updated', => # @update()
+    @subscribe Grim, 'updated', => @refreshButton.show()
+    @refreshButton.click => @update()
 
   destroy: ->
     @detach()
@@ -51,6 +56,7 @@ class DeprecationCopView extends ScrollView
     Error.prepareStackTrace(@defaultError, stack)
 
   update: ->
+    @refreshButton.hide()
     methodList = []
     methodList.push [method, metadata] for method, metadata of Grim.getLog()
     methodList.sort (a, b) -> b[1].count - a[1].count
