@@ -4,7 +4,7 @@ viewUri = 'atom://deprecation-cop'
 
 module.exports =
   activate: ->
-    atom.project.registerOpener (uriToOpen) ->
+    atom.workspace.registerOpener (uriToOpen) ->
       return unless uriToOpen is viewUri
       @deprecationCopView = new DeprecationCopView(uriToOpen)
 
