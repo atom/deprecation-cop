@@ -71,7 +71,9 @@ class DeprecationCopView extends ScrollView
             @span " (called #{count} times)"
 
           @ul class: 'list', =>
-            @li message
+            @li class: 'list-item', =>
+              @div class: 'list-item text-success', message
+
             for stack in stacks
               @li class: 'list-item stack-trace', =>
                 @span class: 'icon icon-alert'
