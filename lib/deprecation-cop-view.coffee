@@ -80,5 +80,5 @@ class DeprecationCopView extends ScrollView
                 if self.getPackageName(stack)
                   @span self.getPackageName(stack) + " package"
                 else
-                  "atom core"
+                  @span "atom core"
                 @pre class: 'stack-trace', self.formatStack(stack)
