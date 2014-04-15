@@ -1,4 +1,6 @@
 {$, $$, ScrollView} = require 'atom'
+path = require 'path'
+fs = require 'fs-plus'
 Grim = require 'grim'
 
 module.exports =
@@ -12,7 +14,7 @@ class DeprecationCopView extends ScrollView
   initialize: ({@uri}) ->
     @update()
     @subscribe this, 'click', '.list-nested-item', -> $(this).toggleClass('collapsed')
-    @subscribe Grim, 'updated', => @update()
+    @subscribe Grim, 'updated', => # @update()
 
   destroy: ->
     @detach()
@@ -23,13 +25,39 @@ class DeprecationCopView extends ScrollView
   getTitle: ->
     'Deprecation Cop'
 
+  getPackagePathsByPackageName: ->
+    return @packagePathsByPackageName if @packagePathsByPackageName?
+
+    @packagePathsByPackageName = {}
+    for {name} in atom.packages.getLoadedPackages()
+      @packagePathsByPackageName[name] = atom.packages.resolvePackagePath(name)
+
+    @packagePathsByPackageName
+
+  getPackageName: (stack) ->
+    resourcePath = atom.getLoadSettings().resourcePath
+    for callsite in stack
+      filePath = callsite.getFileName()
+
+      for packageName, packagePath of @getPackagePathsByPackageName()
+        relativePath = path.relative(packagePath, filePath)
+        unless /^\.\./.test(relativePath)
+          return packageName
+
+    null
+
+  formatStack: (stack) ->
+    @defaultError ?= new Error("Deprecation Error")
+    Error.prepareStackTrace(@defaultError, stack)
+
   update: ->
     methodList = []
     methodList.push [method, metadata] for method, metadata of Grim.getLog()
     methodList.sort (a, b) -> b[1].count - a[1].count
 
+    self = this
     @list.empty()
-    for [method, {count, message, stackTraces}] in methodList
+    for [method, {count, message, stacks}] in methodList
       @list.append $$ ->
         @li class: 'list-nested-item collapsed', =>
           @div class: 'list-item', =>
@@ -37,8 +65,12 @@ class DeprecationCopView extends ScrollView
             @span " (called #{count} times)"
 
           @ul class: 'list', =>
-            for stackTrace in stackTraces
+            @li message
+            for stack in stacks
               @li class: 'list-item stack-trace', =>
                 @span class: 'icon icon-alert'
-                @span stackTrace.split("\n")[3].replace(/^\s*at\s*/, '')
-                @pre stackTrace
+                if self.getPackageName(stack)
+                  @span self.getPackageName(stack) + " package"
+                else
+                  "atom core"
+                @pre class: 'stack-trace', self.formatStack(stack)
