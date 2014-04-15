@@ -53,7 +53,7 @@ class DeprecationCopView extends ScrollView
 
   formatStack: (stack) ->
     @defaultError ?= new Error("Deprecation Error")
-    Error.prepareStackTrace(@defaultError, stack)
+    Error.prepareStackTrace(@defaultError, stack).split("\n")[2..].join("\n")
 
   update: ->
     @refreshButton.hide()
