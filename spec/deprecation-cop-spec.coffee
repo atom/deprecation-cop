@@ -1,29 +1,23 @@
-DeprecationCop = require '../lib/deprecation-cop'
+{WorkspaceView} = require 'atom'
 
-# Use the command `window:run-package-specs` (cmd-alt-ctrl-p) to run specs.
-#
-# To run a specific `it` or `describe` block add an `f` to the front (e.g. `fit`
-# or `fdescribe`). Remove the `f` to unfocus the block.
+DeprecationCopView = require '../lib/deprecation-cop-view'
 
 describe "DeprecationCop", ->
   activationPromise = null
 
   beforeEach ->
     atom.workspaceView = new WorkspaceView
-    activationPromise = atom.packages.activatePackage('deprecationCop')
+    activationPromise = atom.packages.activatePackage('deprecation-cop')
 
-  describe "when the deprecation-cop:toggle event is triggered", ->
-    it "attaches and then detaches the view", ->
-      expect(atom.workspaceView.find('.deprecation-cop')).not.toExist()
+  describe "when the deprecation-cop:view event is triggered", ->
+    it "displayes deprecation cop pane", ->
+      expect(atom.workspace.getActivePane().getActiveItem()).not.toExist()
 
-      # This is an activation event, triggering it will cause the package to be
-      # activated.
-      atom.workspaceView.trigger 'deprecation-cop:toggle'
+      atom.workspaceView.trigger 'deprecation-cop:view'
 
       waitsForPromise ->
         activationPromise
 
       runs ->
-        expect(atom.workspaceView.find('.deprecation-cop')).toExist()
-        atom.workspaceView.trigger 'deprecation-cop:toggle'
-        expect(atom.workspaceView.find('.deprecation-cop')).not.toExist()
+        timeCopView = atom.workspace.getActivePane().getActiveItem()
+        expect(timeCopView instanceof DeprecationCopView).toBeTruthy()
