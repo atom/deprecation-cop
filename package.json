@@ -1,11 +1,13 @@
 {
   "name": "deprecation-cop",
   "main": "./lib/main",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Shows a list of deprecated calls",
   "repository": "https://github.com/atom/deprecation-cop",
   "license": "MIT",
-  "activation-events": ["deprecation-cop:view"],
+  "activation-events": [
+    "deprecation-cop:view"
+  ],
   "engines": {
     "atom": ">0.50.0"
   },
