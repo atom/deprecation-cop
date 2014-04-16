@@ -60,25 +60,29 @@ class DeprecationCopView extends ScrollView
     methodList = []
     methodList.push [method, metadata] for method, metadata of Grim.getLog()
     methodList.sort (a, b) -> b[1].count - a[1].count
-
-    self = this
     @list.empty()
-    for [method, {count, message, stacks}] in methodList
+
+    if methodList.length == 0
       @list.append $$ ->
-        @li class: 'list-nested-item collapsed', =>
-          @div class: 'list-item', =>
-            @span class: 'text-highlight', method
-            @span " (called #{count} times)"
+        @li class: 'list-item', "No deprecated calls"
+    else
+      self = this
+      for [method, {count, message, stacks}] in methodList
+        @list.append $$ ->
+          @li class: 'list-nested-item collapsed', =>
+            @div class: 'list-item', =>
+              @span class: 'text-highlight', method
+              @span " (called #{count} times)"
 
-          @ul class: 'list', =>
-            @li class: 'list-item', =>
-              @div class: 'list-item text-success', message
+            @ul class: 'list', =>
+              @li class: 'list-item', =>
+                @div class: 'list-item text-success', message
 
-            for stack in stacks
-              @li class: 'list-item stack-trace', =>
-                @span class: 'icon icon-alert'
-                if self.getPackageName(stack)
-                  @span self.getPackageName(stack) + " package"
-                else
-                  @span "atom core"
-                @pre class: 'stack-trace', self.formatStack(stack)
+              for stack in stacks
+                @li class: 'list-item stack-trace', =>
+                  @span class: 'icon icon-alert'
+                  if self.getPackageName(stack)
+                    @span self.getPackageName(stack) + " package"
+                  else
+                    @span "atom core"
+                  @pre class: 'stack-trace', self.formatStack(stack)
