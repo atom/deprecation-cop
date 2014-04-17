@@ -17,13 +17,18 @@ class DeprecationCopView extends ScrollView
 
   initialize: ({@uri}) ->
     @update()
+
+    @subscribe Grim, 'updated', =>
+      @refreshButton.show()
+
+    @subscribe @refreshButton, 'click', =>
+      @update()
+
     @subscribe this, 'click', '.deprecation-info', ->
       $(this).parent().toggleClass('collapsed')
+
     @subscribe this, 'click', '.stack-line-location', ->
       atom.open pathsToOpen: [this.href.replace('file://', '')]
-      false
-    @subscribe Grim, 'updated', => @refreshButton.show()
-    @refreshButton.click => @update()
 
   destroy: ->
     @detach()
