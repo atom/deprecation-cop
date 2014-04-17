@@ -18,6 +18,9 @@ class DeprecationCopView extends ScrollView
   initialize: ({@uri}) ->
     @update()
     @subscribe this, 'click', '.list-nested-item', -> $(this).toggleClass('collapsed')
+    @subscribe this, 'click', '.stack-line-location', ->
+      atom.open pathsToOpen: [this.href.replace('file://', '')]
+      false
     @subscribe Grim, 'updated', => @refreshButton.show()
     @refreshButton.click => @update()
 
@@ -41,48 +44,48 @@ class DeprecationCopView extends ScrollView
 
   getPackageName: (stack) ->
     resourcePath = atom.getLoadSettings().resourcePath
-    for callsite in stack
-      filePath = callsite.getFileName()
-
+    for {functionName, location, fileName} in stack
       for packageName, packagePath of @getPackagePathsByPackageName()
-        relativePath = path.relative(packagePath, filePath)
+        relativePath = path.relative(packagePath, fileName)
         unless /^\.\./.test(relativePath)
           return packageName
 
     null
 
-  formatStack: (stack) ->
-    @defaultError ?= new Error("Deprecation Error")
-    Error.prepareStackTrace(@defaultError, stack).split("\n")[2..].join("\n")
-
   update: ->
     @refreshButton.hide()
-    methodList = []
-    methodList.push [method, metadata] for method, metadata of Grim.getLog()
-    methodList.sort (a, b) -> b[1].count - a[1].count
+    deprecations = Grim.getDeprecations()
+    deprecations.sort (a, b) -> b.getCallCount() - a.getCallCount()
     @list.empty()
 
-    if methodList.length == 0
+    if deprecations.length == 0
       @list.append $$ ->
         @li class: 'list-item', "No deprecated calls"
     else
       self = this
-      for [method, {count, message, stacks}] in methodList
+      for deprecation in deprecations
         @list.append $$ ->
           @li class: 'list-nested-item collapsed', =>
             @div class: 'list-item', =>
-              @span class: 'text-highlight', method
-              @span " (called #{count} times)"
+              @span class: 'text-highlight', deprecation.getOriginName()
+              @span " (called #{deprecation.getCallCount()})"
 
             @ul class: 'list', =>
               @li class: 'list-item', =>
-                @div class: 'list-item text-success', message
+                @div class: 'list-item text-success', deprecation.getMessage()
 
+              stacks = deprecation.getStacks()
+              stacks.sort (a, b) -> b.callCount - a.callCount
               for stack in stacks
-                @li class: 'list-item stack-trace', =>
+                @li class: 'list-item', =>
                   @span class: 'icon icon-alert'
                   if self.getPackageName(stack)
-                    @span self.getPackageName(stack) + " package"
+                    @span self.getPackageName(stack) + " package (called #{stack.callCount} times)"
                   else
-                    @span "atom core"
-                  @pre class: 'stack-trace', self.formatStack(stack)
+                    @span "atom core"  + " (called #{stack.callCount} times)"
+                  @div class: 'stack-trace', =>
+                    for {functionName, location, fileName} in stack
+                      @div class: 'stack-line', =>
+                        @span functionName
+                        @span " - "
+                        @a class:'stack-line-location', href:location, location
