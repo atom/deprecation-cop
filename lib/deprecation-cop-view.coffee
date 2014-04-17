@@ -58,6 +58,14 @@ class DeprecationCopView extends ScrollView
 
     null
 
+  createIssueUrl: (packageName, deprecation, stack) ->
+    {metadata} = atom.packages.getActivePackage(packageName)
+    repoUrl = metadata.repository?.url or metadata.repository
+    title = "#{deprecation.getOriginName()} is deprecated."
+    stacktrace = stack.map(({functionName, location}) -> "#{functionName} (#{location})").join("\n")
+    body = "#{deprecation.getMessage()}\n```\n#{stacktrace}\n```"
+    "#{repoUrl}/issues/new?title=#{encodeURI(title)}&body=#{encodeURI(body)}"
+
   update: ->
     @refreshButton.hide()
     deprecations = Grim.getDeprecations()
@@ -71,7 +79,7 @@ class DeprecationCopView extends ScrollView
       self = this
       for deprecation in deprecations
         @list.append $$ ->
-          @li class: 'deprecation list-nested-item collapsed', =>
+          @li class: 'deprecation list-nested-item', =>
             @div class: 'deprecation-info list-item', =>
               @span class: 'text-highlight', deprecation.getOriginName()
               @span " (called #{deprecation.getCallCount()} times)"
@@ -84,11 +92,14 @@ class DeprecationCopView extends ScrollView
               stacks.sort (a, b) -> b.callCount - a.callCount
               for stack in stacks
                 @li class: 'list-item', =>
-                  @span class: 'icon icon-alert'
-                  if self.getPackageName(stack)
-                    @span self.getPackageName(stack) + " package (called #{stack.callCount} times)"
-                  else
-                    @span "atom core"  + " (called #{stack.callCount} times)"
+                  @div class: 'btn-toolbar', =>
+                    @span class: 'icon icon-alert'
+                    if packageName = self.getPackageName(stack)
+                      @span packageName + " package (called #{stack.callCount} times)"
+                      @a href:self.createIssueUrl(packageName, deprecation, stack), "Create Issue on #{packageName} repo"
+                    else
+                      @span "atom core"  + " (called #{stack.callCount} times)"
+
                   @div class: 'stack-trace', =>
                     for {functionName, location, fileName} in stack
                       @div class: 'stack-line', =>
