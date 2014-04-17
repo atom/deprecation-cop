@@ -13,11 +13,12 @@ class DeprecationCopView extends ScrollView
             @div class: 'btn-group', =>
               @button outlet: 'refreshButton', class: 'btn refresh', 'Refresh'
           @span "Deprecated calls"
-        @ul outlet: 'list', class: 'list-tree has-collapsable-children padded'
+        @ul outlet: 'list', class: 'list-tree has-collapsable-children'
 
   initialize: ({@uri}) ->
     @update()
-    @subscribe this, 'click', '.list-nested-item', -> $(this).toggleClass('collapsed')
+    @subscribe this, 'click', '.deprecation-info', ->
+      $(this).parent().toggleClass('collapsed')
     @subscribe this, 'click', '.stack-line-location', ->
       atom.open pathsToOpen: [this.href.replace('file://', '')]
       false
@@ -65,10 +66,10 @@ class DeprecationCopView extends ScrollView
       self = this
       for deprecation in deprecations
         @list.append $$ ->
-          @li class: 'list-nested-item collapsed', =>
-            @div class: 'list-item', =>
+          @li class: 'deprecation list-nested-item collapsed', =>
+            @div class: 'deprecation-info list-item', =>
               @span class: 'text-highlight', deprecation.getOriginName()
-              @span " (called #{deprecation.getCallCount()})"
+              @span " (called #{deprecation.getCallCount()} times)"
 
             @ul class: 'list', =>
               @li class: 'list-item', =>
