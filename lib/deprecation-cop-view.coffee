@@ -79,7 +79,7 @@ class DeprecationCopView extends ScrollView
       self = this
       for deprecation in deprecations
         @list.append $$ ->
-          @li class: 'deprecation list-nested-item', =>
+          @li class: 'deprecation list-nested-item collapsed', =>
             @div class: 'deprecation-info list-item', =>
               @span class: 'text-highlight', deprecation.getOriginName()
               @span " (called #{deprecation.getCallCount()} times)"
