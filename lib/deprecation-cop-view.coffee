@@ -58,7 +58,9 @@ class DeprecationCopView extends ScrollView
 
 
   createIssueUrl: (packageName, deprecation, stack) ->
-    {metadata} = atom.packages.getActivePackage(packageName)
+    return '' unless pack = atom.packages.getActivePackage(packageName)
+
+    {metadata} = pack
     repoUrl = metadata.repository?.url or metadata.repository
     title = "#{deprecation.getOriginName()} is deprecated."
     stacktrace = stack.map(({functionName, location}) -> "#{functionName} (#{location})").join("\n")
