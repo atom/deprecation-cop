@@ -1,5 +1,6 @@
 {$, $$, ScrollView} = require 'atom'
 path = require 'path'
+_ = require 'underscore-plus'
 fs = require 'fs-plus'
 Grim = require 'grim'
 
@@ -70,6 +71,7 @@ class DeprecationCopView extends ScrollView
     deprecations.sort (a, b) -> b.getCallCount() - a.getCallCount()
     @list.empty()
 
+    # I feel guilty about this nested code catastrophe
     if deprecations.length == 0
       @list.append $$ ->
         @li class: 'list-item', "No deprecated calls"
@@ -80,7 +82,7 @@ class DeprecationCopView extends ScrollView
           @li class: 'deprecation list-nested-item collapsed', =>
             @div class: 'deprecation-info list-item', =>
               @span class: 'text-highlight', deprecation.getOriginName()
-              @span " (called #{deprecation.getCallCount()} times)"
+              @span " (called #{_.pluralize(deprecation.getCallCount(), 'time')})"
 
             @ul class: 'list', =>
               @li class: 'list-item', =>
@@ -93,10 +95,10 @@ class DeprecationCopView extends ScrollView
                   @div class: 'btn-toolbar', =>
                     @span class: 'icon icon-alert'
                     if packageName = self.getPackageName(stack)
-                      @span packageName + " package (called #{stack.callCount} times)"
+                      @span packageName + " package (called #{_.pluralize(stack.callCount, 'time')})"
                       @a href:self.createIssueUrl(packageName, deprecation, stack), "Create Issue on #{packageName} repo"
                     else
-                      @span "atom core"  + " (called #{stack.callCount} times)"
+                      @span "atom core"  + " (called #{_.pluralize(stack.callCount, 'time')})"
 
                   @div class: 'stack-trace', =>
                     for {functionName, location, fileName} in stack
