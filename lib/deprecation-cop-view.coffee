@@ -7,7 +7,7 @@ Grim = require 'grim'
 module.exports =
 class DeprecationCopView extends ScrollView
   @content: ->
-    @div class: 'deprecation-cop pane-item', tabindex: -1, =>
+    @div class: 'deprecation-cop pane-item native-key-bindings', tabindex: -1, =>
       @div class: 'panel', =>
         @div class: 'panel-heading', =>
           @div class: 'btn-toolbar pull-right', =>
