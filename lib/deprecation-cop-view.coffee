@@ -50,13 +50,11 @@ class DeprecationCopView extends ScrollView
 
   getPackageName: (stack) ->
     resourcePath = atom.getLoadSettings().resourcePath
-    for {functionName, location, fileName} in stack
-      for packageName, packagePath of @getPackagePathsByPackageName()
-        relativePath = path.relative(packagePath, fileName)
-        unless /^\.\./.test(relativePath)
-          return packageName
+    {functionName, location, fileName} = stack[1]
+    for packageName, packagePath of @getPackagePathsByPackageName()
+      relativePath = path.relative(packagePath, fileName)
+      return packageName unless /^\.\./.test(relativePath)
 
-    null
 
   createIssueUrl: (packageName, deprecation, stack) ->
     {metadata} = atom.packages.getActivePackage(packageName)
