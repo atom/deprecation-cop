@@ -84,7 +84,10 @@ class DeprecationCopView extends ScrollView
           @li class: 'deprecation list-nested-item collapsed', =>
             @div class: 'deprecation-info list-item', =>
               @span class: 'text-highlight', deprecation.getOriginName()
-              @span " (called #{_.pluralize(deprecation.getCallCount(), 'time')})"
+              if deprecation.getCallCount() >= Grim.maxDeprecationCallCount()
+                @span " (called more than #{deprecation.getCallCount()} times)"
+              else
+                @span " (called #{_.pluralize(deprecation.getCallCount(), 'time')})"
 
             @ul class: 'list', =>
               @li class: 'list-item', =>
