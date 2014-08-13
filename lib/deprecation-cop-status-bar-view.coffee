@@ -23,9 +23,9 @@ class DeprecationCopStatusBarView extends View
 
   update: =>
     length = Grim.getDeprecationsLength()
-    return if lastLength == length
+    return if @lastLength == length
 
-    lastLength = length
+    @lastLength = length
     @deprecationNumber.text(length)
     @destroyTooltip()
     @setTooltip("#{_.pluralize(length, 'call')} to deprecated methods")
