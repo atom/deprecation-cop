@@ -17,10 +17,11 @@ class DeprecationCopView extends ScrollView
         @ul outlet: 'list', class: 'list-tree has-collapsable-children'
 
   initialize: ({@uri}) ->
-    @update()
-
     @subscribe Grim, 'updated', =>
       @refreshButton.show()
+
+  afterAttach: ->
+    @update()
 
     @subscribe @refreshButton, 'click', =>
       @update()
