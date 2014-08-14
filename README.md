@@ -1,4 +1,4 @@
-# Deprecation Cop Atom Package
+# Deprecation Cop Atom Package [![Build Status](https://travis-ci.org/atom/deprecation-cop.svg?branch=master)](https://travis-ci.org/atom/deprecation-cop)
 
 Shows a list of deprecated methods calls. Ideally it should show nothing!
 
