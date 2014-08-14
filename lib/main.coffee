@@ -1,7 +1,13 @@
-DeprecationCopView = require './deprecation-cop-view'
-DeprecationCopStatusBarView = require './deprecation-cop-status-bar-view'
+DeprecationCopView = null
 
 viewUri = 'atom://deprecation-cop'
+createView = (state) ->
+  DeprecationCopView ?= require './deprecation-cop-view'
+  new DeprecationCopView(state)
+
+atom.deserializers.add
+  name: 'DeprecationCopView'
+  deserialize: createView
 
 module.exports =
   deprecationCopView: null
@@ -10,14 +16,15 @@ module.exports =
   activate: ->
     atom.workspace.registerOpener (uriToOpen) =>
       return unless uriToOpen is viewUri
-      @deprecationCopView = new DeprecationCopView(uriToOpen)
+      @deprecationCopView = createView(uri: uriToOpen)
 
     atom.packages.once 'activated', =>
+      DeprecationCopStatusBarView = require './deprecation-cop-status-bar-view'
       @deprecationCopStatusBarView ?= new DeprecationCopStatusBarView()
       atom.workspaceView.statusBar?.appendRight(@deprecationCopStatusBarView)
 
     atom.workspaceView.command 'deprecation-cop:view', ->
-      atom.workspaceView.open(viewUri)
+      atom.workspace.open(viewUri)
 
   deactivate: ->
     @deprecationCopView?.destroy()

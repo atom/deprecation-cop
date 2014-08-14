@@ -37,6 +37,10 @@ class DeprecationCopView extends ScrollView
   destroy: ->
     @detach()
 
+  serialize: ->
+    deserializer: @constructor.name
+    uri: @getUri()
+
   getUri: ->
     @uri
 
