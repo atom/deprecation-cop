@@ -47,6 +47,9 @@ class DeprecationCopView extends ScrollView
   getTitle: ->
     'Deprecation Cop'
 
+  getIconName: ->
+    'alert'
+
   getPackagePathsByPackageName: ->
     return @packagePathsByPackageName if @packagePathsByPackageName?
 
