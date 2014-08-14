@@ -30,7 +30,9 @@ class DeprecationCopView extends ScrollView
       $(this).parent().toggleClass('collapsed')
 
     @subscribe this, 'click', '.stack-line-location', ->
-      atom.open pathsToOpen: [this.href.replace('file://', '')]
+      pathToOpen = @href.replace('file://', '')
+      pathToOpen = pathToOpen.replace(/^\//, '') if process.platform is 'win32'
+      atom.open(pathsToOpen: [pathToOpen])
 
   destroy: ->
     @detach()
