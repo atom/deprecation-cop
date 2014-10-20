@@ -54,8 +54,8 @@ class DeprecationCopView extends ScrollView
     return @packagePathsByPackageName if @packagePathsByPackageName?
 
     @packagePathsByPackageName = {}
-    for {name} in atom.packages.getLoadedPackages()
-      @packagePathsByPackageName[name] = atom.packages.resolvePackagePath(name)
+    for pack in atom.packages.getLoadedPackages()
+      @packagePathsByPackageName[pack.name] = pack.path
 
     @packagePathsByPackageName
 
@@ -65,7 +65,6 @@ class DeprecationCopView extends ScrollView
     for packageName, packagePath of @getPackagePathsByPackageName()
       relativePath = path.relative(packagePath, fileName)
       return packageName unless /^\.\./.test(relativePath)
-
 
   createIssueUrl: (packageName, deprecation, stack) ->
     return unless repo = atom.packages.getActivePackage(packageName)?.metadata?.repository
