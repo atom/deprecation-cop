@@ -62,6 +62,10 @@ class DeprecationCopView extends ScrollView
   getPackageName: (stack) ->
     resourcePath = atom.getLoadSettings().resourcePath
     {functionName, location, fileName} = stack[1]
+
+    # Empty when it was run from the dev console
+    return unless fileName
+
     for packageName, packagePath of @getPackagePathsByPackageName()
       relativePath = path.relative(packagePath, fileName)
       return packageName unless /^\.\./.test(relativePath)
