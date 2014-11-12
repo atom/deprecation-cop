@@ -3,6 +3,7 @@ path = require 'path'
 _ = require 'underscore-plus'
 fs = require 'fs-plus'
 Grim = require 'grim'
+SelectorLinter = require 'atom-selector-linter'
 
 module.exports =
 class DeprecationCopView extends ScrollView
@@ -12,19 +13,32 @@ class DeprecationCopView extends ScrollView
         @div class: 'panel-heading', =>
           @div class: 'btn-toolbar pull-right', =>
             @div class: 'btn-group', =>
-              @button outlet: 'refreshButton', class: 'btn refresh', 'Refresh'
+              @button outlet: 'refreshCallsButton', class: 'btn refresh', 'Refresh'
           @span "Deprecated calls"
         @ul outlet: 'list', class: 'list-tree has-collapsable-children'
 
+        @div class: 'panel-heading', =>
+          @div class: 'btn-toolbar pull-right', =>
+            @div class: 'btn-group', =>
+              @button outlet: 'refreshSelectorsButton', class: 'btn refresh-selectors', 'Refresh'
+          @span "Deprecated selectors"
+        @ul outlet: 'selectorList', class: 'selectors list-tree has-collapsable-children'
+
   initialize: ({@uri}) ->
     @subscribe Grim, 'updated', =>
-      @refreshButton.show()
+      @refreshCallsButton.show()
+
+    @subscribe atom.packages.onDidActivateAll =>
+      @refreshSelectorsButton.show()
 
   afterAttach: ->
-    @update()
+    @updateCalls()
+    @updateSelectors()
 
-    @subscribe @refreshButton, 'click', =>
-      @update()
+    @subscribe @refreshCallsButton, 'click', =>
+      @updateCalls()
+    @subscribe @refreshSelectorsButton, 'click', =>
+      @updateSelectors()
 
     @subscribe this, 'click', '.deprecation-info', ->
       $(this).parent().toggleClass('collapsed')
@@ -32,6 +46,11 @@ class DeprecationCopView extends ScrollView
     @subscribe this, 'click', '.stack-line-location', ->
       pathToOpen = @href.replace('file://', '')
       pathToOpen = pathToOpen.replace(/^\//, '') if process.platform is 'win32'
+      atom.open(pathsToOpen: [pathToOpen])
+
+    @subscribe this, 'click', '.source-file a', ->
+      pathToOpen = @href.replace('file://', '')
+      pathToOpen = @href.replace(/^\//, '') if process.platform is 'win32'
       atom.open(pathsToOpen: [pathToOpen])
 
   destroy: ->
@@ -80,8 +99,8 @@ class DeprecationCopView extends ScrollView
     body = "#{deprecation.getMessage()}\n```\n#{stacktrace}\n```"
     "#{repoUrl}/issues/new?title=#{encodeURI(title)}&body=#{encodeURI(body)}"
 
-  update: ->
-    @refreshButton.hide()
+  updateCalls: ->
+    @refreshCallsButton.hide()
     deprecations = Grim.getDeprecations()
     deprecations.sort (a, b) -> b.getCallCount() - a.getCallCount()
     @list.empty()
@@ -125,3 +144,42 @@ class DeprecationCopView extends ScrollView
                         @span functionName
                         @span " - "
                         @a class:'stack-line-location', href:location, location
+
+  updateSelectors: ->
+    @refreshSelectorsButton.hide()
+    linter = new SelectorLinter(maxPerPackage: 50)
+    for pack in atom.packages.getActivePackages()
+      for [keymapPath, keymap] in pack.keymaps
+        linter.checkKeymap(keymap, {
+          packageName: pack.name,
+          packagePath: pack.path,
+          sourcePath: keymapPath
+        })
+      for [menuPath, menu] in pack.menus
+        linter.checkMenu(menu, {
+          packageName: pack.name,
+          packagePath: pack.path,
+          sourcePath: menuPath
+        })
+      for [stylesheetPath, stylesheet] in pack.stylesheets
+        linter.checkStylesheet(stylesheet, {
+          packageName: pack.name,
+          packagePath: pack.path,
+          sourcePath: stylesheetPath
+        })
+
+    @selectorList.empty()
+    for packageName, deprecationsByFile of linter.getDeprecations()
+      @selectorList.append $$ ->
+        @li class: 'deprecation list-nested-item collapsed', =>
+          @div class: 'deprecation-info list-item', =>
+            @span class: 'text-highlight', packageName
+
+          @ul class: 'list', =>
+            for sourcePath, deprecations of deprecationsByFile
+              @li class: 'list-item source-file', =>
+                relativePath = path.relative(deprecations[0].packagePath, sourcePath)
+                @a href: sourcePath, relativePath
+                @ul class: 'list', =>
+                  for deprecation in deprecations
+                    @li class: 'list-item text-success', deprecation.message
