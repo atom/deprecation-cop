@@ -147,28 +147,12 @@ class DeprecationCopView extends ScrollView
 
   updateSelectors: ->
     @refreshSelectorsButton.hide()
-    linter = new SelectorLinter(maxPerPackage: 50)
-    for pack in atom.packages.getActivePackages()
-      for [keymapPath, keymap] in pack.keymaps
-        linter.checkKeymap(keymap, {
-          packageName: pack.name,
-          packagePath: pack.path,
-          sourcePath: keymapPath
-        })
-      for [menuPath, menu] in pack.menus
-        linter.checkMenu(menu, {
-          packageName: pack.name,
-          packagePath: pack.path,
-          sourcePath: menuPath
-        })
-      for [stylesheetPath, stylesheet] in pack.stylesheets
-        linter.checkStylesheet(stylesheet, {
-          packageName: pack.name,
-          packagePath: pack.path,
-          sourcePath: stylesheetPath
-        })
-
     @selectorList.empty()
+
+    linter = new SelectorLinter(maxPerPackage: 50)
+    for pkg in atom.packages.getActivePackages()
+      linter.checkPackage(pkg)
+
     for packageName, deprecationsByFile of linter.getDeprecations()
       @selectorList.append $$ ->
         @li class: 'deprecation list-nested-item collapsed', =>
@@ -178,8 +162,7 @@ class DeprecationCopView extends ScrollView
           @ul class: 'list', =>
             for sourcePath, deprecations of deprecationsByFile
               @li class: 'list-item source-file', =>
-                relativePath = path.relative(deprecations[0].packagePath, sourcePath)
-                @a href: sourcePath, relativePath
+                @a href: path.join(deprecations[0].packagePath, sourcePath), sourcePath
                 @ul class: 'list', =>
                   for deprecation in deprecations
                     @li class: 'list-item text-success', deprecation.message
