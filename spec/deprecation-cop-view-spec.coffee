@@ -27,10 +27,7 @@ describe "DeprecationCopView", ->
   it "displays deprecated selectors", ->
     fakePackageDir = path.join(__dirname, "..", "spec", "fixtures", "package-with-deprecated-selectors")
 
-    # TODO - do this better?
-    Package = atom.packages.getActivePackages()[0].constructor
-    pack = new Package(fakePackageDir)
-    pack.load()
+    pack = atom.packages.loadPackage(fakePackageDir)
     spyOn(atom.packages, 'getActivePackages').andReturn([pack])
     deprecationCopView.find("button.refresh-selectors").click()
 
