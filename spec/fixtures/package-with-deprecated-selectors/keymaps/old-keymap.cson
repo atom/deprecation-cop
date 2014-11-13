@@ -1,0 +1,2 @@
+'.pane-container':
+  'cmd-x': 'the-namespace:the-command'
