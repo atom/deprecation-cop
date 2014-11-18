@@ -1,5 +1,6 @@
 {$, $$, ScrollView} = require 'atom'
 path = require 'path'
+fs = require 'fs'
 _ = require 'underscore-plus'
 fs = require 'fs-plus'
 Grim = require 'grim'
@@ -75,14 +76,22 @@ class DeprecationCopView extends ScrollView
 
   getPackageName: (stack) ->
     resourcePath = atom.getLoadSettings().resourcePath
-    {functionName, location, fileName} = stack[1]
 
-    # Empty when it was run from the dev console
-    return unless fileName
+    packagePaths = @getPackagePathsByPackageName()
+    for packageName, packagePath of packagePaths
+      if packagePath.indexOf('.atom/dev/packages') > -1 or packagePath.indexOf('.atom/packages') > -1
+        packagePaths[packageName] = fs.realpathSync(packagePath)
 
-    for packageName, packagePath of @getPackagePathsByPackageName()
-      relativePath = path.relative(packagePath, fileName)
-      return packageName unless /^\.\./.test(relativePath)
+    for i in [1...stack.length]
+      {functionName, location, fileName} = stack[i]
+
+      # Empty when it was run from the dev console
+      return unless fileName
+
+      for packageName, packagePath of packagePaths
+        relativePath = path.relative(packagePath, fileName)
+        return packageName unless /^\.\./.test(relativePath)
+    return
 
   createIssueUrl: (packageName, deprecation, stack) ->
     return unless repo = atom.packages.getActivePackage(packageName)?.metadata?.repository
