@@ -21,7 +21,7 @@ describe "DeprecationCopView", ->
       deprecationCopView = atom.workspace.getActivePane().getActiveItem()
 
   it "displays deprecated methods", ->
-    expect(deprecationCopView.html()).toMatch /deprecation-cop package/
+    expect(deprecationCopView.html()).toMatch /Deprecated calls/
     expect(deprecationCopView.html()).toMatch /This isn't used/
 
   it "displays deprecated selectors", ->

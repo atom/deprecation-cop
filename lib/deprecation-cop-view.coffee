@@ -100,38 +100,40 @@ class DeprecationCopView extends ScrollView
     deprecations.sort (a, b) -> b.getCallCount() - a.getCallCount()
     @list.empty()
 
+    packageDeprecations = {}
+    for deprecation in deprecations
+      stacks = deprecation.getStacks()
+      stacks.sort (a, b) -> b.callCount - a.callCount
+      for stack in stacks
+        packageName = (@getPackageName(stack) or '').toLowerCase()
+        packageDeprecations[packageName] ?= []
+        packageDeprecations[packageName].push {deprecation, stack}
+
     # I feel guilty about this nested code catastrophe
     if deprecations.length == 0
       @list.append $$ ->
         @li class: 'list-item', "No deprecated calls"
     else
       self = this
-      for deprecation in deprecations
+      packageNames = _.keys(packageDeprecations)
+      packageNames.sort()
+      for packageName in packageNames
         @list.append $$ ->
           @li class: 'deprecation list-nested-item collapsed', =>
             @div class: 'deprecation-info list-item', =>
-              @span class: 'text-highlight', deprecation.getOriginName()
-              if deprecation.getCallCount() >= Grim.maxDeprecationCallCount()
-                @span " (called more than #{deprecation.getCallCount()} times)"
-              else
-                @span " (called #{_.pluralize(deprecation.getCallCount(), 'time')})"
+              @span class: 'text-highlight', packageName or 'atom core'
+              @span " (#{_.pluralize(packageDeprecations[packageName].length, 'deprecation')})"
 
             @ul class: 'list', =>
-              @li class: 'list-item', =>
-                @div class: 'list-item text-success', deprecation.getMessage()
-
-              stacks = deprecation.getStacks()
-              stacks.sort (a, b) -> b.callCount - a.callCount
-              for stack in stacks
+              for {deprecation, stack} in packageDeprecations[packageName]
                 @li class: 'list-item', =>
+                  @span class: 'icon icon-alert'
+                  @span class: 'list-item text-success', deprecation.getMessage()
+
                   @div class: 'btn-toolbar', =>
-                    @span class: 'icon icon-alert'
-                    if packageName = self.getPackageName(stack)
-                      @span packageName + " package (called #{_.pluralize(stack.callCount, 'time')})"
-                      if url = self.createIssueUrl(packageName, deprecation, stack)
-                        @a href:url, "Create Issue on #{packageName} repo"
-                    else
-                      @span "atom core"  + " (called #{_.pluralize(stack.callCount, 'time')})"
+                    @span "Called #{_.pluralize(stack.callCount, 'time')}"
+                    if packageName and url = self.createIssueUrl(packageName, deprecation, stack)
+                      @a href:url, "Create Issue on #{packageName} repo"
 
                   @div class: 'stack-trace', =>
                     for {functionName, location, fileName} in stack
