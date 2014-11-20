@@ -23,6 +23,25 @@
     background-color: @background-color-selected !important;
   }
 
+  .deprecation-detail.list-item {
+    white-space: normal;
+
+    .deprecation-message {
+      padding: 5px 0 5px 28px;
+      line-height: 1.4;
+      font-size: @font-size + 2px;
+
+      p:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    .icon-alert {
+      margin-top: 5px;
+      float: left;
+    }
+  }
+
   .collapsed > ul {
     display: none;
   }

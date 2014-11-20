@@ -5,6 +5,7 @@ _ = require 'underscore-plus'
 fs = require 'fs-plus'
 Grim = require 'grim'
 SelectorLinter = require 'atom-selector-linter'
+marked = require 'marked'
 
 module.exports =
 class DeprecationCopView extends ScrollView
@@ -135,9 +136,10 @@ class DeprecationCopView extends ScrollView
 
             @ul class: 'list', =>
               for {deprecation, stack} in packageDeprecations[packageName]
-                @li class: 'list-item', =>
-                  @span class: 'icon icon-alert'
-                  @span class: 'list-item text-success', deprecation.getMessage()
+                @li class: 'list-item deprecation-detail', =>
+                  @span class: 'text-warning icon icon-alert'
+                  @div class: 'list-item deprecation-message', =>
+                    @raw marked(deprecation.getMessage())
 
                   @div class: 'btn-toolbar', =>
                     @span "Called #{_.pluralize(stack.callCount, 'time')}"
