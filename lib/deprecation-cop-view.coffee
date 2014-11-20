@@ -36,6 +36,11 @@ class DeprecationCopView extends ScrollView
   afterAttach: ->
     @updateCalls()
     @updateSelectors()
+    @subscribeToEvents()
+
+  subscribeToEvents: ->
+    # afterAttach is called 2x when dep cop is the active pane item on reload.
+    return if @subscribedToEvents
 
     @subscribe @refreshCallsButton, 'click', =>
       @updateCalls()
@@ -49,6 +54,8 @@ class DeprecationCopView extends ScrollView
       pathToOpen = @href.replace('file://', '')
       pathToOpen = pathToOpen.replace(/^\//, '') if process.platform is 'win32'
       atom.open(pathsToOpen: [pathToOpen])
+
+    @subscribedToEvents = true
 
   destroy: ->
     @detach()
