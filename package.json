@@ -13,6 +13,6 @@
     "grim": "0.12.0",
     "marked": "^0.3",
     "underscore-plus": "^1.0.0",
-    "atom-selector-linter": "^0.1.3"
+    "atom-selector-linter": "^0.1.4"
   }
 }
