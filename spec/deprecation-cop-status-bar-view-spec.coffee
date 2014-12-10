@@ -1,12 +1,12 @@
-{WorkspaceView} = require 'atom'
 Grim = require 'grim'
 DeprecationCopView = require '../lib/deprecation-cop-view'
 
 xdescribe "DeprecationCopStatusBarView", ->
-  [deprecatedMethod, statusBarView] = []
+  [deprecatedMethod, statusBarView, workspaceElement] = []
 
   beforeEach ->
-    atom.workspaceView = new WorkspaceView
+    workspaceElement = atom.views.getView(atom.workspace)
+    jasmine.attachToDOM(workspaceElement)
     sbActivationPromise = atom.packages.activatePackage('status-bar')
     dcActivationPromise = atom.packages.activatePackage('deprecation-cop')
 
@@ -14,30 +14,30 @@ xdescribe "DeprecationCopStatusBarView", ->
     waitsForPromise -> dcActivationPromise
     runs ->
       # UGH
-      atom.packages.emit 'activated'
-      statusBarView = atom.workspaceView.find('.deprecation-cop-status')
+      atom.packages.emitter.emit 'did-activate-all'
+      statusBarView = workspaceElement.querySelector('.deprecation-cop-status')
 
   it "adds the status bar view when activated", ->
-    expect(statusBarView).toHaveLength 1
-    expect(statusBarView.text()).toBe '0'
+    expect(statusBarView).toExist()
+    expect(statusBarView.textContent).toBe '0'
     expect(statusBarView).not.toShow()
 
   it "increments when there are deprecated methods", ->
     deprecatedMethod = -> Grim.deprecate("This isn't used")
     anotherDeprecatedMethod = -> Grim.deprecate("This either")
-    expect(statusBarView[0].style.display).toBe 'none'
+    expect(statusBarView.style.display).toBe 'none'
     expect(statusBarView).not.toShow()
 
     deprecatedMethod()
-    expect(statusBarView.text()).toBe '1'
+    expect(statusBarView.textContent).toBe '1'
     expect(statusBarView).toShow()
 
     deprecatedMethod()
-    expect(statusBarView.text()).toBe '1'
+    expect(statusBarView.textContent).toBe '1'
     expect(statusBarView).toShow()
 
     anotherDeprecatedMethod()
-    expect(statusBarView.text()).toBe '2'
+    expect(statusBarView.textContent).toBe '2'
     expect(statusBarView).toShow()
 
   it 'opens deprecation cop tab when clicked', ->

@@ -12,6 +12,7 @@ atom.deserializers.add
 module.exports =
   deprecationCopView: null
   deprecationCopStatusBarView: null
+  commandSubscription: null
 
   activate: ->
     atom.workspace.addOpener (uriToOpen) =>
@@ -20,14 +21,22 @@ module.exports =
 
     # TODO: Uncomment when we're ready to encourage users to file issues about
     # deprecations. It will be when we get closer to the API freeze.
-    # atom.packages.once 'activated', =>
+    # activatedDisposable = atom.packages.onDidActivateAll =>
     #   DeprecationCopStatusBarView = require './deprecation-cop-status-bar-view'
     #   @deprecationCopStatusBarView ?= new DeprecationCopStatusBarView()
-    #   atom.workspaceView.statusBar?.appendRight(@deprecationCopStatusBarView)
+    #   workspaceElement = atom.views.getView(atom.workspace)
+    #   statusBar = workspaceElement.querySelector('.status-bar')
+    #   statusBar?.appendRight(@deprecationCopStatusBarView)
+    #   activatedDisposable.dispose()
 
-    atom.commands.add 'atom-workspace', 'deprecation-cop:view', ->
+    @commandSubscription = atom.commands.add 'atom-workspace', 'deprecation-cop:view', ->
       atom.workspace.open(viewUri)
 
   deactivate: ->
     @deprecationCopView?.destroy()
     @deprecationCopStatusBarView?.destroy()
+    @commandSubscription?.dispose()
+
+    @deprecationCopView = null
+    @deprecationCopStatusBarView = null
+    @commandSubscription = null

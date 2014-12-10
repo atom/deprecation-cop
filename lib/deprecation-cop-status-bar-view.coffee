@@ -1,4 +1,5 @@
-{$, $$, View} = require 'atom'
+{CompositeDisposable} = require 'atom'
+{$, $$, View} = require 'atom-space-pen-views'
 _ = require 'underscore-plus'
 Grim = require 'grim'
 
@@ -10,25 +11,31 @@ class DeprecationCopStatusBarView extends View
       @span class: 'deprecation-number', outlet: 'deprecationNumber', '0'
 
   lastLength: null
+  toolTipDisposable: null
 
   initialize: ->
-    @subscribe Grim, 'updated', @update
+    @subscriptions = new CompositeDisposable
+    @subscriptions.add Grim.on 'updated', @update
 
   destroy: ->
+    @subscriptions.dispose()
     @detach()
 
-  afterAttach: ->
+  attached: ->
     @update()
-    @subscribe this, 'click', => atom.workspaceView.trigger 'deprecation-cop:view'
+    @click =>
+      workspaceElement = atom.views.getView(atom.workspace)
+      atom.commands.dispatch workspaceElement, 'deprecation-cop:view'
 
   update: =>
+    console.log 'update'
     length = Grim.getDeprecationsLength()
     return if @lastLength == length
 
     @lastLength = length
     @deprecationNumber.text(length)
-    @destroyTooltip()
-    @setTooltip("#{_.pluralize(length, 'call')} to deprecated methods")
+    @toolTipDisposable?.dispose()
+    @toolTipDisposable = atom.tooltips.add @element, title: "#{_.pluralize(length, 'call')} to deprecated methods"
 
     if length == 0
       @hide()
