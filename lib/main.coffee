@@ -25,7 +25,7 @@ module.exports =
     #   @deprecationCopStatusBarView ?= new DeprecationCopStatusBarView()
     #   atom.workspaceView.statusBar?.appendRight(@deprecationCopStatusBarView)
 
-    atom.workspaceView.command 'deprecation-cop:view', ->
+    atom.commands.add 'atom-workspace', 'deprecation-cop:view', ->
       atom.workspace.open(viewUri)
 
   deactivate: ->
