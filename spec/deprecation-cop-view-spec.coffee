@@ -9,7 +9,7 @@ describe "DeprecationCopView", ->
     workspaceElement = atom.views.getView(atom.workspace)
     jasmine.attachToDOM(workspaceElement)
     activationPromise = atom.packages.activatePackage('deprecation-cop')
-    deprecatedMethod = -> Grim.deprecate("This isn't used")
+    deprecatedMethod = -> Grim.deprecate("A test deprecation. This isn't used")
     deprecatedMethod()
 
     atom.commands.dispatch workspaceElement, 'deprecation-cop:view'

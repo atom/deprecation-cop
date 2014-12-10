@@ -1,4 +1,4 @@
-{CompositeDisposable} = require 'atom'
+{Disposable, CompositeDisposable} = require 'atom'
 {$, $$, ScrollView} = require 'atom-space-pen-views'
 path = require 'path'
 fs = require 'fs'
@@ -74,6 +74,10 @@ class DeprecationCopView extends ScrollView
 
   getIconName: ->
     'alert'
+
+  # TODO: remove these after removing all deprecations from core. They are NOPs
+  onDidChangeTitle: -> new Disposable
+  onDidChangeModified: -> new Disposable
 
   getPackagePathsByPackageName: ->
     return @packagePathsByPackageName if @packagePathsByPackageName?

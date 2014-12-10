@@ -14,7 +14,7 @@ module.exports =
   deprecationCopStatusBarView: null
 
   activate: ->
-    atom.workspace.registerOpener (uriToOpen) =>
+    atom.workspace.addOpener (uriToOpen) =>
       return unless uriToOpen is viewUri
       @deprecationCopView = createView(uri: uriToOpen)
 
