@@ -23,7 +23,7 @@ class DeprecationCopStatusBarView extends View
 
   attached: ->
     @update()
-    @click =>
+    @click ->
       workspaceElement = atom.views.getView(atom.workspace)
       atom.commands.dispatch workspaceElement, 'deprecation-cop:view'
 
