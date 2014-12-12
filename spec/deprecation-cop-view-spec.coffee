@@ -1,18 +1,18 @@
-{WorkspaceView} = require 'atom'
 Grim = require 'grim'
 DeprecationCopView = require '../lib/deprecation-cop-view'
 path = require 'path'
 
 describe "DeprecationCopView", ->
-  deprecationCopView = null
+  [deprecationCopView, workspaceElement] = []
 
   beforeEach ->
-    atom.workspaceView = new WorkspaceView
+    workspaceElement = atom.views.getView(atom.workspace)
+    jasmine.attachToDOM(workspaceElement)
     activationPromise = atom.packages.activatePackage('deprecation-cop')
-    deprecatedMethod = -> Grim.deprecate("This isn't used")
+    deprecatedMethod = -> Grim.deprecate("A test deprecation. This isn't used")
     deprecatedMethod()
 
-    atom.workspaceView.trigger 'deprecation-cop:view'
+    atom.commands.dispatch workspaceElement, 'deprecation-cop:view'
 
     waitsForPromise ->
       activationPromise

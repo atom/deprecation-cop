@@ -1,4 +1,5 @@
-{$, $$, ScrollView} = require 'atom'
+{Disposable, CompositeDisposable} = require 'atom'
+{$, $$, ScrollView} = require 'atom-space-pen-views'
 path = require 'path'
 fs = require 'fs'
 _ = require 'underscore-plus'
@@ -27,13 +28,12 @@ class DeprecationCopView extends ScrollView
         @ul outlet: 'selectorList', class: 'selectors list-tree has-collapsable-children'
 
   initialize: ({@uri}) ->
-    @subscribe Grim, 'updated', =>
-      @refreshCallsButton.show()
-
-    @subscribe atom.packages.onDidActivateAll =>
+    @subscriptions = new CompositeDisposable
+    @subscriptions.add Grim.on 'updated', @handleGrimUpdated
+    @subscriptions.add atom.packages.onDidActivateAll =>
       @refreshSelectorsButton.show()
 
-  afterAttach: ->
+  attached: ->
     @updateCalls()
     @updateSelectors()
     @subscribeToEvents()
@@ -42,15 +42,13 @@ class DeprecationCopView extends ScrollView
     # afterAttach is called 2x when dep cop is the active pane item on reload.
     return if @subscribedToEvents
 
-    @subscribe @refreshCallsButton, 'click', =>
-      @updateCalls()
-    @subscribe @refreshSelectorsButton, 'click', =>
-      @updateSelectors()
+    @refreshCallsButton.on 'click', => @updateCalls()
+    @refreshSelectorsButton.on 'click', => @updateSelectors()
 
-    @subscribe this, 'click', '.deprecation-info', ->
+    @on 'click', '.deprecation-info', ->
       $(this).parent().toggleClass('collapsed')
 
-    @subscribe this, 'click', '.stack-line-location, .source-file a', ->
+    @on 'click', '.stack-line-location, .source-file a', ->
       pathToOpen = @href.replace('file://', '')
       pathToOpen = pathToOpen.replace(/^\//, '') if process.platform is 'win32'
       atom.open(pathsToOpen: [pathToOpen])
@@ -58,11 +56,15 @@ class DeprecationCopView extends ScrollView
     @subscribedToEvents = true
 
   destroy: ->
+    @subscriptions.dispose()
     @detach()
 
   serialize: ->
     deserializer: @constructor.name
     uri: @getUri()
+
+  handleGrimUpdated: =>
+    @refreshCallsButton.show()
 
   getUri: ->
     @uri
@@ -72,6 +74,10 @@ class DeprecationCopView extends ScrollView
 
   getIconName: ->
     'alert'
+
+  # TODO: remove these after removing all deprecations from core. They are NOPs
+  onDidChangeTitle: -> new Disposable
+  onDidChangeModified: -> new Disposable
 
   getPackagePathsByPackageName: ->
     return @packagePathsByPackageName if @packagePathsByPackageName?
