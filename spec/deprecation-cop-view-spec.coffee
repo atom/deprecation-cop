@@ -9,6 +9,9 @@ describe "DeprecationCopView", ->
     workspaceElement = atom.views.getView(atom.workspace)
     jasmine.attachToDOM(workspaceElement)
     activationPromise = atom.packages.activatePackage('deprecation-cop')
+
+    expect(Grim.getDeprecationsLength()).toBe 0
+    spyOn(Grim, 'deprecate').andCallThrough()
     deprecatedMethod = -> Grim.deprecate("A test deprecation. This isn't used")
     deprecatedMethod()
 
@@ -19,6 +22,11 @@ describe "DeprecationCopView", ->
 
     runs ->
       deprecationCopView = atom.workspace.getActivePane().getActiveItem()
+
+  afterEach ->
+    # Make sure the only deprecated calls were the ones being tested
+    expect(Grim.deprecate.callCount).toBe 1
+    Grim.clearDeprecations()
 
   it "displays deprecated methods", ->
     expect(deprecationCopView.html()).toMatch /Deprecated calls/
