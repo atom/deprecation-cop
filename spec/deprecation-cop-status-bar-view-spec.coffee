@@ -1,7 +1,7 @@
 Grim = require 'grim'
 DeprecationCopView = require '../lib/deprecation-cop-view'
 
-xdescribe "DeprecationCopStatusBarView", ->
+describe "DeprecationCopStatusBarView", ->
   [deprecatedMethod, statusBarView, workspaceElement] = []
 
   beforeEach ->
