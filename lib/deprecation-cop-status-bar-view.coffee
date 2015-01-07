@@ -28,7 +28,6 @@ class DeprecationCopStatusBarView extends View
       atom.commands.dispatch workspaceElement, 'deprecation-cop:view'
 
   update: =>
-    console.log 'update'
     length = Grim.getDeprecationsLength()
     return if @lastLength == length
 
