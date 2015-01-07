@@ -3,6 +3,8 @@
 _ = require 'underscore-plus'
 Grim = require 'grim'
 
+{getSelectorDeprecations} = require './helpers'
+
 module.exports =
 class DeprecationCopStatusBarView extends View
   @content: ->
@@ -16,6 +18,7 @@ class DeprecationCopStatusBarView extends View
   initialize: ->
     @subscriptions = new CompositeDisposable
     @subscriptions.add Grim.on 'updated', @update
+    @subscriptions.add atom.packages.onDidActivateAll @update
 
   destroy: ->
     @subscriptions.dispose()
@@ -28,7 +31,8 @@ class DeprecationCopStatusBarView extends View
       atom.commands.dispatch workspaceElement, 'deprecation-cop:view'
 
   update: =>
-    length = Grim.getDeprecationsLength()
+    length = Grim.getDeprecationsLength() + _.size(getSelectorDeprecations())
+
     return if @lastLength == length
 
     @lastLength = length

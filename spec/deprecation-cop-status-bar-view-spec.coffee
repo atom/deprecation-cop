@@ -1,3 +1,4 @@
+path = require 'path'
 Grim = require 'grim'
 DeprecationCopView = require '../lib/deprecation-cop-view'
 
@@ -43,6 +44,16 @@ describe "DeprecationCopStatusBarView", ->
 
     anotherDeprecatedMethod()
     expect(statusBarView.textContent).toBe '2'
+    expect(statusBarView).toShow()
+
+  it "increments when there are deprecated selectors", ->
+    fakePackageDir = path.join(__dirname, "..", "spec", "fixtures", "package-with-deprecated-selectors")
+
+    pack = atom.packages.loadPackage(fakePackageDir)
+    spyOn(atom.packages, 'getActivePackages').andReturn([pack])
+
+    atom.packages.emitter.emit 'did-activate-all'
+    expect(statusBarView.textContent).toBe '1'
     expect(statusBarView).toShow()
 
   it 'opens deprecation cop tab when clicked', ->
