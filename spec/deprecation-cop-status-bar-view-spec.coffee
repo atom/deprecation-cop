@@ -5,6 +5,8 @@ describe "DeprecationCopStatusBarView", ->
   [deprecatedMethod, statusBarView, workspaceElement] = []
 
   beforeEach ->
+    jasmine.snapshotDeprecations()
+
     workspaceElement = atom.views.getView(atom.workspace)
     jasmine.attachToDOM(workspaceElement)
     sbActivationPromise = atom.packages.activatePackage('status-bar')
@@ -16,6 +18,9 @@ describe "DeprecationCopStatusBarView", ->
       # UGH
       atom.packages.emitter.emit 'did-activate-all'
       statusBarView = workspaceElement.querySelector('.deprecation-cop-status')
+
+  afterEach ->
+    jasmine.restoreDeprecationsSnapshot()
 
   it "adds the status bar view when activated", ->
     expect(statusBarView).toExist()
