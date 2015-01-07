@@ -26,7 +26,7 @@ module.exports =
       @deprecationCopStatusBarView ?= new DeprecationCopStatusBarView()
       workspaceElement = atom.views.getView(atom.workspace)
       statusBar = workspaceElement.querySelector('.status-bar')
-      statusBar?.appendRight(@deprecationCopStatusBarView)
+      statusBar?.addRightTile(item: @deprecationCopStatusBarView)
       activatedDisposable.dispose()
 
     @commandSubscription = atom.commands.add 'atom-workspace', 'deprecation-cop:view', ->
