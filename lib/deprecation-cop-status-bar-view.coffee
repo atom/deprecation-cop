@@ -18,7 +18,7 @@ class DeprecationCopStatusBarView extends View
   initialize: ->
     @subscriptions = new CompositeDisposable
     @subscriptions.add Grim.on 'updated', @update
-    @subscriptions.add atom.packages.onDidActivateAll @update
+    @subscriptions.add atom.packages.onDidLoadAll @update
 
   destroy: ->
     @subscriptions.dispose()

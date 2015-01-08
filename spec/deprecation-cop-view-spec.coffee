@@ -36,7 +36,7 @@ describe "DeprecationCopView", ->
     fakePackageDir = path.join(__dirname, "..", "spec", "fixtures", "package-with-deprecated-selectors")
 
     pack = atom.packages.loadPackage(fakePackageDir)
-    spyOn(atom.packages, 'getActivePackages').andReturn([pack])
+    spyOn(atom.packages, 'getLoadedPackages').andReturn([pack])
     deprecationCopView.find("button.refresh-selectors").click()
 
     packageItems = deprecationCopView.find("ul.selectors > li")

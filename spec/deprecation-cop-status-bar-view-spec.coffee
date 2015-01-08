@@ -10,11 +10,9 @@ describe "DeprecationCopStatusBarView", ->
 
     workspaceElement = atom.views.getView(atom.workspace)
     jasmine.attachToDOM(workspaceElement)
-    sbActivationPromise = atom.packages.activatePackage('status-bar')
-    dcActivationPromise = atom.packages.activatePackage('deprecation-cop')
+    waitsForPromise -> atom.packages.activatePackage('status-bar')
+    waitsForPromise -> atom.packages.activatePackage('deprecation-cop')
 
-    waitsForPromise -> sbActivationPromise
-    waitsForPromise -> dcActivationPromise
     runs ->
       # UGH
       atom.packages.emitter.emit 'did-activate-all'
@@ -52,7 +50,7 @@ describe "DeprecationCopStatusBarView", ->
     pack = atom.packages.loadPackage(fakePackageDir)
     spyOn(atom.packages, 'getActivePackages').andReturn([pack])
 
-    atom.packages.emitter.emit 'did-activate-all'
+    atom.packages.emitter.emit 'did-load-all'
     expect(statusBarView.textContent).toBe '1'
     expect(statusBarView).toShow()
 
