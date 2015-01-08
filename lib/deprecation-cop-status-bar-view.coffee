@@ -30,8 +30,11 @@ class DeprecationCopStatusBarView extends View
       workspaceElement = atom.views.getView(atom.workspace)
       atom.commands.dispatch workspaceElement, 'deprecation-cop:view'
 
+  getDeprecatedSelectorCount: ->
+    @deprecatedSelectorCount ?= _.size(getSelectorDeprecations())
+
   update: =>
-    length = Grim.getDeprecationsLength() + _.size(getSelectorDeprecations())
+    length = Grim.getDeprecationsLength() + @getDeprecatedSelectorCount()
 
     return if @lastLength == length
 
