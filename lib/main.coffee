@@ -19,7 +19,7 @@ module.exports =
       return unless uriToOpen is viewUri
       @deprecationCopView = createView(uri: uriToOpen)
 
-    activatedDisposable = atom.packages.onDidActivateAll =>
+    activatedDisposable = atom.packages.onDidActivateInitialPackages =>
       DeprecationCopStatusBarView = require './deprecation-cop-status-bar-view'
       @deprecationCopStatusBarView ?= new DeprecationCopStatusBarView()
       workspaceElement = atom.views.getView(atom.workspace)
