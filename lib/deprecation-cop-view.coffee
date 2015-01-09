@@ -128,7 +128,7 @@ class DeprecationCopView extends ScrollView
       stacks = deprecation.getStacks()
       stacks.sort (a, b) -> b.callCount - a.callCount
       for stack in stacks
-        packageName = (@getPackageName(stack) or '').toLowerCase()
+        packageName = stack.metadata?.packageName ? (@getPackageName(stack) or '').toLowerCase()
         packageDeprecations[packageName] ?= []
         packageDeprecations[packageName].push {deprecation, stack}
 
