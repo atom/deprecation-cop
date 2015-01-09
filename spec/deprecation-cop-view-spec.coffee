@@ -9,7 +9,7 @@ describe "DeprecationCopView", ->
     workspaceElement = atom.views.getView(atom.workspace)
     jasmine.attachToDOM(workspaceElement)
 
-    expect(Grim.getDeprecationsLength()).toBe 0
+    Grim.clearDeprecations()
     deprecatedMethod = -> Grim.deprecate("A test deprecation. This isn't used")
     deprecatedMethod()
 
