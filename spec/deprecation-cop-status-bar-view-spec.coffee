@@ -48,7 +48,7 @@ describe "DeprecationCopStatusBarView", ->
     fakePackageDir = path.join(__dirname, "..", "spec", "fixtures", "package-with-deprecated-selectors")
     atom.packages.loadPackage(fakePackageDir)
 
-    expect(statusBarView.textContent).toBe '1'
+    expect(statusBarView.textContent).toBe '3'
     expect(statusBarView).toBeVisible()
 
     atom.packages.unloadPackage('package-with-deprecated-selectors')

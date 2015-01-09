@@ -3,7 +3,7 @@
 _ = require 'underscore-plus'
 Grim = require 'grim'
 
-{getSelectorDeprecations} = require './helpers'
+{getSelectorDeprecations, getSelectorDeprecationsCount} = require './helpers'
 
 module.exports =
 class DeprecationCopStatusBarView extends View
@@ -32,7 +32,7 @@ class DeprecationCopStatusBarView extends View
       atom.commands.dispatch workspaceElement, 'deprecation-cop:view'
 
   getDeprecatedSelectorCount: ->
-    @deprecatedSelectorCount ?= _.size(getSelectorDeprecations())
+    @deprecatedSelectorCount ?= getSelectorDeprecationsCount()
 
   updateDeprecatedSelectorCount: =>
     @deprecatedSelectorCount = null
