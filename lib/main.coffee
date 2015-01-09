@@ -19,8 +19,6 @@ module.exports =
       return unless uriToOpen is viewUri
       @deprecationCopView = createView(uri: uriToOpen)
 
-    # TODO: Uncomment when we're ready to encourage users to file issues about
-    # deprecations. It will be when we get closer to the API freeze.
     activatedDisposable = atom.packages.onDidActivateAll =>
       DeprecationCopStatusBarView = require './deprecation-cop-status-bar-view'
       @deprecationCopStatusBarView ?= new DeprecationCopStatusBarView()
