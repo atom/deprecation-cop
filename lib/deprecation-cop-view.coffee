@@ -31,7 +31,7 @@ class DeprecationCopView extends ScrollView
   initialize: ({@uri}) ->
     @subscriptions = new CompositeDisposable
     @subscriptions.add Grim.on 'updated', @handleGrimUpdated
-    @subscriptions.add atom.packages.onDidActivateAll =>
+    @subscriptions.add atom.packages.onDidActivateInitialPackages =>
       @refreshSelectorsButton.show()
 
   attached: ->

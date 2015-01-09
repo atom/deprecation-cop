@@ -18,7 +18,8 @@ class DeprecationCopStatusBarView extends View
   initialize: ->
     @subscriptions = new CompositeDisposable
     @subscriptions.add Grim.on 'updated', @update
-    @subscriptions.add atom.packages.onDidLoadAll @update
+    @subscriptions.add atom.packages.onDidLoadPackage @updateDeprecatedSelectorCount
+    @subscriptions.add atom.packages.onDidUnloadPackage @updateDeprecatedSelectorCount
 
   destroy: ->
     @subscriptions.dispose()
@@ -32,6 +33,10 @@ class DeprecationCopStatusBarView extends View
 
   getDeprecatedSelectorCount: ->
     @deprecatedSelectorCount ?= _.size(getSelectorDeprecations())
+
+  updateDeprecatedSelectorCount: =>
+    @deprecatedSelectorCount = null
+    @update()
 
   update: =>
     length = Grim.getDeprecationsLength() + @getDeprecatedSelectorCount()

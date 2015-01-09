@@ -15,7 +15,7 @@ describe "DeprecationCopStatusBarView", ->
 
     runs ->
       # UGH
-      atom.packages.emitter.emit 'did-activate-all'
+      atom.packages.emitter.emit 'did-activate-initial-packages'
       statusBarView = workspaceElement.querySelector('.deprecation-cop-status')
 
   afterEach ->
@@ -46,13 +46,15 @@ describe "DeprecationCopStatusBarView", ->
 
   it "increments when there are deprecated selectors", ->
     fakePackageDir = path.join(__dirname, "..", "spec", "fixtures", "package-with-deprecated-selectors")
+    atom.packages.loadPackage(fakePackageDir)
 
-    pack = atom.packages.loadPackage(fakePackageDir)
-    spyOn(atom.packages, 'getActivePackages').andReturn([pack])
-
-    atom.packages.emitter.emit 'did-load-all'
     expect(statusBarView.textContent).toBe '1'
-    expect(statusBarView).toShow()
+    expect(statusBarView).toBeVisible()
+
+    atom.packages.unloadPackage('package-with-deprecated-selectors')
+
+    expect(statusBarView.textContent).toBe '0'
+    expect(statusBarView).not.toBeVisible()
 
   it 'opens deprecation cop tab when clicked', ->
     expect(atom.workspace.getActivePane().getActiveItem()).not.toExist()
