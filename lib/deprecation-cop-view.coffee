@@ -34,6 +34,9 @@ class DeprecationCopView extends ScrollView
     @subscriptions.add atom.packages.onDidActivateInitialPackages =>
       @refreshSelectorsButton.show()
 
+    @subscriptions.add atom.packages.onDidActivatePackage (pack) =>
+      @refreshSelectorsButton.show() if pack.isTheme()
+
   attached: ->
     @updateCalls()
     @updateSelectors()
