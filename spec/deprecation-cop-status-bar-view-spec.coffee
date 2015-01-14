@@ -55,6 +55,19 @@ describe "DeprecationCopStatusBarView", ->
     expect(statusBarView.textContent).toBe '0'
     expect(statusBarView).not.toBeVisible()
 
+  it "increments when a theme with deprecated selectors is activated", ->
+    atom.packages.loadPackage(path.join(__dirname, "..", "spec", "fixtures", "theme-with-deprecated-selectors"))
+
+    expect(statusBarView).not.toBeVisible()
+    expect(statusBarView.textContent).toBe '0'
+
+    waitsForPromise ->
+      atom.packages.activatePackage(path.join(__dirname, "..", "spec", "fixtures", "theme-with-deprecated-selectors"))
+
+    runs ->
+      expect(statusBarView).toBeVisible()
+      expect(statusBarView.textContent).toBe '1'
+
   it 'opens deprecation cop tab when clicked', ->
     expect(atom.workspace.getActivePane().getActiveItem()).not.toExist()
     statusBarView.click()

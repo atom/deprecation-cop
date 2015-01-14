@@ -20,6 +20,7 @@ class DeprecationCopStatusBarView extends View
     @subscriptions.add Grim.on 'updated', @update
     @subscriptions.add atom.packages.onDidLoadPackage @updateDeprecatedSelectorCount
     @subscriptions.add atom.packages.onDidUnloadPackage @updateDeprecatedSelectorCount
+    @subscriptions.add atom.packages.onDidActivatePackage @updateDeprecatedSelectorCount
 
   destroy: ->
     @subscriptions.dispose()
