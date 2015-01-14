@@ -67,7 +67,7 @@ class DeprecationCopView extends ScrollView
   handleGrimUpdated: =>
     @refreshCallsButton.show()
 
-  getUri: ->
+  getURI: ->
     @uri
 
   getTitle: ->
