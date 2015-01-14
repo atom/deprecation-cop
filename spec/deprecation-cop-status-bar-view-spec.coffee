@@ -45,8 +45,7 @@ describe "DeprecationCopStatusBarView", ->
     expect(statusBarView).toShow()
 
   it "increments when there are deprecated selectors", ->
-    fakePackageDir = path.join(__dirname, "..", "spec", "fixtures", "package-with-deprecated-selectors")
-    atom.packages.loadPackage(fakePackageDir)
+    atom.packages.loadPackage(path.join(__dirname, "..", "spec", "fixtures", "package-with-deprecated-selectors"))
 
     expect(statusBarView.textContent).toBe '3'
     expect(statusBarView).toBeVisible()

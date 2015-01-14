@@ -50,4 +50,4 @@ describe "DeprecationCopView", ->
     expect(packageDeprecationItems.eq(1).text()).toMatch /atom-pane-container/
     expect(packageDeprecationItems.eq(1).find("a").attr("href")).toBe(path.join(fakePackageDir, "keymaps", "old-keymap.cson"))
     expect(packageDeprecationItems.eq(2).text()).toMatch /atom-workspace/
-    expect(packageDeprecationItems.eq(2).find("a").attr("href")).toBe(path.join(fakePackageDir, "stylesheets", "old-stylesheet.less"))
+    expect(packageDeprecationItems.eq(2).find("a").attr("href")).toBe(path.join(fakePackageDir, "styles", "old-stylesheet.less"))
