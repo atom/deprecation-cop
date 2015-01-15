@@ -36,7 +36,7 @@ describe "DeprecationCopView", ->
     fakePackageDir = path.join(__dirname, "..", "spec", "fixtures", "package-with-deprecated-selectors")
 
     pack = atom.packages.loadPackage(fakePackageDir)
-    spyOn(atom.packages, 'getActivePackages').andReturn([pack])
+    spyOn(atom.packages, 'getLoadedPackages').andReturn([pack])
     deprecationCopView.find("button.refresh-selectors").click()
 
     packageItems = deprecationCopView.find("ul.selectors > li")
@@ -50,4 +50,16 @@ describe "DeprecationCopView", ->
     expect(packageDeprecationItems.eq(1).text()).toMatch /atom-pane-container/
     expect(packageDeprecationItems.eq(1).find("a").attr("href")).toBe(path.join(fakePackageDir, "keymaps", "old-keymap.cson"))
     expect(packageDeprecationItems.eq(2).text()).toMatch /atom-workspace/
-    expect(packageDeprecationItems.eq(2).find("a").attr("href")).toBe(path.join(fakePackageDir, "stylesheets", "old-stylesheet.less"))
+    expect(packageDeprecationItems.eq(2).find("a").attr("href")).toBe(path.join(fakePackageDir, "styles", "old-stylesheet.less"))
+
+    jasmine.unspy(atom.packages, 'getLoadedPackages')
+
+  it "updates when themes with deprecated selectors are activated", ->
+    deprecationCopView.find("button.refresh-selectors").click()
+    expect(deprecationCopView.find("button.refresh-selectors")).toBeHidden()
+
+    waitsForPromise ->
+      atom.packages.activatePackage(path.join(__dirname, "..", "spec", "fixtures", "theme-with-deprecated-selectors"))
+
+    runs ->
+      expect(deprecationCopView.find("button.refresh-selectors")).toBeVisible()

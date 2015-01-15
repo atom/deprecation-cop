@@ -5,8 +5,9 @@ fs = require 'fs'
 _ = require 'underscore-plus'
 fs = require 'fs-plus'
 Grim = require 'grim'
-SelectorLinter = require 'atom-selector-linter'
 marked = require 'marked'
+
+{getSelectorDeprecations} = require './helpers'
 
 module.exports =
 class DeprecationCopView extends ScrollView
@@ -30,8 +31,11 @@ class DeprecationCopView extends ScrollView
   initialize: ({@uri}) ->
     @subscriptions = new CompositeDisposable
     @subscriptions.add Grim.on 'updated', @handleGrimUpdated
-    @subscriptions.add atom.packages.onDidActivateAll =>
+    @subscriptions.add atom.packages.onDidActivateInitialPackages =>
       @refreshSelectorsButton.show()
+
+    @subscriptions.add atom.packages.onDidActivatePackage (pack) =>
+      @refreshSelectorsButton.show() if pack.isTheme()
 
   attached: ->
     @updateCalls()
@@ -66,7 +70,7 @@ class DeprecationCopView extends ScrollView
   handleGrimUpdated: =>
     @refreshCallsButton.show()
 
-  getUri: ->
+  getURI: ->
     @uri
 
   getTitle: ->
@@ -170,11 +174,7 @@ class DeprecationCopView extends ScrollView
     @refreshSelectorsButton.hide()
     @selectorList.empty()
 
-    linter = new SelectorLinter(maxPerPackage: 50)
-    for pkg in atom.packages.getActivePackages()
-      linter.checkPackage(pkg)
-
-    for packageName, deprecationsByFile of linter.getDeprecations()
+    for packageName, deprecationsByFile of getSelectorDeprecations()
       @selectorList.append $$ ->
         @li class: 'deprecation list-nested-item collapsed', =>
           @div class: 'deprecation-info list-item', =>
