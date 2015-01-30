@@ -1,7 +1,6 @@
 {Disposable, CompositeDisposable} = require 'atom'
 {$, $$, ScrollView} = require 'atom-space-pen-views'
 path = require 'path'
-fs = require 'fs'
 _ = require 'underscore-plus'
 fs = require 'fs-plus'
 Grim = require 'grim'
@@ -98,7 +97,7 @@ class DeprecationCopView extends ScrollView
     packagePaths = @getPackagePathsByPackageName()
     for packageName, packagePath of packagePaths
       if packagePath.indexOf('.atom/dev/packages') > -1 or packagePath.indexOf('.atom/packages') > -1
-        packagePaths[packageName] = fs.realpathSync(packagePath)
+        packagePaths[packageName] = fs.absolute(packagePath)
 
     for i in [1...stack.length]
       {functionName, location, fileName} = stack[i]
