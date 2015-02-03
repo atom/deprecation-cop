@@ -51,7 +51,7 @@ class DeprecationCopView extends ScrollView
     @on 'click', '.deprecation-info', ->
       $(this).parent().toggleClass('collapsed')
 
-    @on 'click', '.stack-line-location, .source-file a', ->
+    @on 'click', '.stack-line-location, .source-url', ->
       pathToOpen = @href.replace('file://', '')
       pathToOpen = pathToOpen.replace(/^\//, '') if process.platform is 'win32'
       atom.open(pathsToOpen: [pathToOpen])
@@ -137,6 +137,15 @@ class DeprecationCopView extends ScrollView
     body = "#{deprecation.getMessage()}\n```\n#{stacktrace}\n```"
     "#{repoUrl}/issues/new?title=#{encodeURI(title)}&body=#{encodeURI(body)}"
 
+  createSelectorIssueUrl: (packageName, deprecation, sourcePath) ->
+    return unless repo = atom.packages.getActivePackage(packageName)?.metadata?.repository
+    repoUrl = repo.url ? repo
+    repoUrl = repoUrl.replace(/\.git$/, '')
+
+    title = deprecation.message
+    body = "In #{sourcePath}: #{deprecation.message}"
+    "#{repoUrl}/issues/new?title=#{encodeURI(title)}&body=#{encodeURI(body)}"
+
   updateCalls: ->
     @refreshCallsButton.hide()
     deprecations = Grim.getDeprecations()
@@ -189,6 +198,7 @@ class DeprecationCopView extends ScrollView
   updateSelectors: ->
     @refreshSelectorsButton.hide()
     @selectorList.empty()
+    self = this
 
     for packageName, deprecationsByFile of getSelectorDeprecations()
       @selectorList.append $$ ->
@@ -199,7 +209,13 @@ class DeprecationCopView extends ScrollView
           @ul class: 'list', =>
             for sourcePath, deprecations of deprecationsByFile
               @li class: 'list-item source-file', =>
-                @a href: path.join(deprecations[0].packagePath, sourcePath), sourcePath
+                @a class: 'source-url', href: path.join(deprecations[0].packagePath, sourcePath), sourcePath
                 @ul class: 'list', =>
                   for deprecation in deprecations
-                    @li class: 'list-item text-success', deprecation.message
+                    @li class: 'list-item', =>
+                      @span class: 'text-warning icon icon-alert'
+                      @span class: 'list-item deprecation-message', deprecation.message
+
+                      @div class: 'btn-toolbar', =>
+                        if url = self.createSelectorIssueUrl(packageName, deprecation, sourcePath)
+                          @a class: 'issue-url', href: url, "Create Issue on #{packageName} repo"
