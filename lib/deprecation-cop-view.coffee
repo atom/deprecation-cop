@@ -56,6 +56,23 @@ class DeprecationCopView extends ScrollView
       pathToOpen = pathToOpen.replace(/^\//, '') if process.platform is 'win32'
       atom.open(pathsToOpen: [pathToOpen])
 
+    @on 'click', '.issue-url', ->
+      # win32 can only handle a 2048 length link, so we use the shortener.
+      return if process.platform isnt 'win32'
+
+      openExternally = (urlToOpen=@href) =>
+        require('shell').openExternal(urlToOpen)
+
+      $.ajax 'http://git.io',
+        type: 'POST'
+        data: url: @href
+        success: (data, status, xhr) ->
+          openExternally(xhr.getResponseHeader('Location'))
+        error: ->
+          openExternally()
+
+      false
+
     @subscribedToEvents = true
 
   destroy: ->
@@ -160,14 +177,14 @@ class DeprecationCopView extends ScrollView
                   @div class: 'btn-toolbar', =>
                     @span "Called #{_.pluralize(stack.callCount, 'time')}"
                     if packageName and url = self.createIssueUrl(packageName, deprecation, stack)
-                      @a href:url, "Create Issue on #{packageName} repo"
+                      @a class: 'issue-url', href: url, "Create Issue on #{packageName} repo"
 
                   @div class: 'stack-trace', =>
                     for {functionName, location, fileName} in stack
                       @div class: 'stack-line', =>
                         @span functionName
                         @span " - "
-                        @a class:'stack-line-location', href:location, location
+                        @a class:'stack-line-location', href: location, location
 
   updateSelectors: ->
     @refreshSelectorsButton.hide()
