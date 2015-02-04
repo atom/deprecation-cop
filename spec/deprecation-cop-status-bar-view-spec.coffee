@@ -14,8 +14,6 @@ describe "DeprecationCopStatusBarView", ->
     waitsForPromise -> atom.packages.activatePackage('deprecation-cop')
 
     runs ->
-      # UGH
-      atom.packages.emitter.emit 'did-activate-initial-packages'
       statusBarView = workspaceElement.querySelector('.deprecation-cop-status')
 
   afterEach ->
