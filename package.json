@@ -14,7 +14,7 @@
     "grim": "^1",
     "marked": "^0.3",
     "underscore-plus": "^1.0.0",
-    "atom-selector-linter": "^0.2.5"
+    "atom-selector-linter": "^0.2.6"
   },
   "consumedServices": {
     "status-bar": {
