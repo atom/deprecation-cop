@@ -1,3 +1,5 @@
+Grim = require 'grim'
+
 DeprecationCopView = null
 
 viewUri = 'atom://deprecation-cop'
@@ -5,9 +7,10 @@ createView = (state) ->
   DeprecationCopView ?= require './deprecation-cop-view'
   new DeprecationCopView(state)
 
-atom.deserializers.add
-  name: 'DeprecationCopView'
-  deserialize: createView
+if Grim.includeDeprecatedAPIs
+  atom.deserializers.add
+    name: 'DeprecationCopView'
+    deserialize: createView
 
 module.exports =
   deprecationCopView: null
@@ -15,6 +18,8 @@ module.exports =
   commandSubscription: null
 
   activate: ->
+    return unless Grim.includeDeprecatedAPIs
+
     atom.workspace.addOpener (uriToOpen) =>
       return unless uriToOpen is viewUri
       @deprecationCopView = createView(uri: uriToOpen)
@@ -32,6 +37,8 @@ module.exports =
     @commandSubscription = null
 
   consumeStatusBar: (statusBar) ->
+    return unless Grim.includeDeprecatedAPIs
+
     DeprecationCopStatusBarView = require './deprecation-cop-status-bar-view'
     @deprecationCopStatusBarView ?= new DeprecationCopStatusBarView()
     statusBar.addRightTile(item: @deprecationCopStatusBarView, priority: 150)
