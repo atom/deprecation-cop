@@ -36,7 +36,7 @@ class DeprecationCopStatusBarView extends View
     @deprecatedSelectorCount ?= getSelectorDeprecationsCount()
   
   getDeprecatedCallCount: ->
-    (deprecation.getStacks().length for deprecation in Grim.getDeprecations()).reduce(((a, b) -> a + b), 0);
+    Grim.getDeprecations().map((d) -> d.getStacks().length).reduce(((a, b) -> a + b), 0)
 
   updateDeprecatedSelectorCount: =>
     @deprecatedSelectorCount = null
