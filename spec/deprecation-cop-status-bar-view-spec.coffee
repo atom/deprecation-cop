@@ -35,11 +35,11 @@ describe "DeprecationCopStatusBarView", ->
     expect(statusBarView).toShow()
 
     deprecatedMethod()
-    expect(statusBarView.textContent).toBe '1'
+    expect(statusBarView.textContent).toBe '2'
     expect(statusBarView).toShow()
 
     anotherDeprecatedMethod()
-    expect(statusBarView.textContent).toBe '2'
+    expect(statusBarView.textContent).toBe '3'
     expect(statusBarView).toShow()
 
   it "increments when there are deprecated selectors", ->
