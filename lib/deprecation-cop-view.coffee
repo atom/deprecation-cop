@@ -215,9 +215,10 @@ class DeprecationCopView extends ScrollView
                 @a class: 'source-url', href: path.join(deprecations[0].packagePath, sourcePath), sourcePath
                 @ul class: 'list', =>
                   for deprecation in deprecations
-                    @li class: 'list-item', =>
+                    @li class: 'list-item deprecation-detail', =>
                       @span class: 'text-warning icon icon-alert'
-                      @span class: 'list-item deprecation-message', deprecation.message
+                      @div class: 'list-item deprecation-message', =>
+                        @raw marked(deprecation.message)
 
                       @div class: 'btn-toolbar', =>
                         if url = self.createSelectorIssueUrl(packageName, deprecation, sourcePath)
