@@ -125,6 +125,9 @@ class DeprecationCopView extends ScrollView
       for packageName, packagePath of packagePaths
         relativePath = path.relative(packagePath, fileName)
         return packageName unless /^\.\./.test(relativePath)
+      
+      return "Your local #{path.basename(fileName)} file" if atom.getUserInitScriptPath() is fileName
+      
     return
 
   createIssueUrl: (packageName, deprecation, stack) ->
