@@ -1,4 +1,4 @@
-{CompositeDisposable} = require 'atom'
+{CompositeDisposable, File} = require 'atom'
 {$, $$, View} = require 'atom-space-pen-views'
 _ = require 'underscore-plus'
 Grim = require 'grim'
@@ -21,6 +21,15 @@ class DeprecationCopStatusBarView extends View
     @subscriptions.add atom.packages.onDidLoadPackage @updateDeprecatedSelectorCount
     @subscriptions.add atom.packages.onDidUnloadPackage @updateDeprecatedSelectorCount
     @subscriptions.add atom.packages.onDidActivatePackage @updateDeprecatedSelectorCount
+    
+    @subscriptions.add atom.keymaps.onDidReloadKeymap (event) => 
+      @updateDeprecatedSelectorCount() if event.path is atom.keymaps.getUserKeymapPath()
+    
+    try
+      userStylesheetFile = new File(atom.styles.getUserStyleSheetPath())
+      @subscriptions.add userStylesheetFile.onDidChange @updateDeprecatedSelectorCount
+    catch
+      
 
   destroy: ->
     @subscriptions.dispose()
