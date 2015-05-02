@@ -21,7 +21,6 @@ exports.getSelectorDeprecations = ->
         sourcePath: userKeymapPath
       })
       
-    
   userStyleSheetPath = atom.styles.getUserStyleSheetPath()
   
   if fs.isFileSync(userStyleSheetPath)
