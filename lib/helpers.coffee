@@ -9,11 +9,18 @@ exports.getSelectorDeprecations = ->
   userKeymapPath = atom.keymaps.getUserKeymapPath()
   
   if fs.isFileSync(userKeymapPath)
-    linter.checkKeymap(CSON.readFileSync(atom.keymaps.getUserKeymapPath()), {
-      packageName: "your local #{path.basename(userKeymapPath)} file"
-      packagePath: ""
-      sourcePath: userKeymapPath
-    })
+    try
+      userKeymapCson = CSON.readFileSync(userKeymapPath)
+    catch error
+      console.warn("Failed to load keymap file: #{userKeymapPath}", error)
+      
+    if userKeymapCson
+      linter.checkKeymap(userKeymapCson, {
+        packageName: "your local #{path.basename(userKeymapPath)} file"
+        packagePath: ""
+        sourcePath: userKeymapPath
+      })
+      
     
   userStyleSheetPath = atom.styles.getUserStyleSheetPath()
   
