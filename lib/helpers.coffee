@@ -25,7 +25,7 @@ exports.getSelectorDeprecations = ->
   userStyleSheetPath = atom.styles.getUserStyleSheetPath()
   
   if fs.isFileSync(userStyleSheetPath)
-    userStyleSheet = fs.readFileSync(atom.styles.getUserStyleSheetPath(), 'utf8')
+    userStyleSheet = fs.readFileSync(userStyleSheetPath, 'utf8')
     linter.checkSyntaxStylesheet(userStyleSheet, {
       packageName: "your local #{path.basename(userStyleSheetPath)} file"
       packagePath: ""
