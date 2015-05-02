@@ -26,11 +26,6 @@ exports.getSelectorDeprecations = ->
   
   if fs.isFileSync(userStyleSheetPath)
     userStyleSheet = fs.readFileSync(userStyleSheetPath, 'utf8')
-    linter.checkSyntaxStylesheet(userStyleSheet, {
-      packageName: "your local #{path.basename(userStyleSheetPath)} file"
-      packagePath: ""
-      sourcePath: userStyleSheetPath
-    })
     linter.checkUIStylesheet(userStyleSheet, {
       packageName: "your local #{path.basename(userStyleSheetPath)} file"
       packagePath: ""
