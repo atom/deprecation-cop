@@ -35,15 +35,13 @@ class DeprecationCopView extends ScrollView
 
     @subscriptions.add atom.packages.onDidActivatePackage (pack) =>
       @refreshSelectorsButton.show() if pack.isTheme()
-    
-    @subscriptions.add atom.keymaps.onDidReloadKeymap (event) => 
+
+    @subscriptions.add atom.keymaps.onDidReloadKeymap (event) =>
       @refreshSelectorsButton.show() if event.path is atom.keymaps.getUserKeymapPath()
-    
+
     try
       userStylesheetFile = new File(atom.styles.getUserStyleSheetPath())
       @subscriptions.add userStylesheetFile.onDidChange => @refreshSelectorsButton.show()
-    catch
-      
 
   attached: ->
     @updateCalls()
@@ -134,9 +132,9 @@ class DeprecationCopView extends ScrollView
       for packageName, packagePath of packagePaths
         relativePath = path.relative(packagePath, fileName)
         return packageName unless /^\.\./.test(relativePath)
-      
+
       return "Your local #{path.basename(fileName)} file" if atom.getUserInitScriptPath() is fileName
-      
+
     return
 
   createIssueUrl: (packageName, deprecation, stack) ->
