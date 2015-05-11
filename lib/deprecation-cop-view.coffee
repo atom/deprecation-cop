@@ -41,8 +41,7 @@ class DeprecationCopView extends ScrollView
 
     userStylesheetPath = atom.styles.getUserStyleSheetPath()
     stylesChanged = (element) =>
-      if element.getAttribute('source-path') is userStylesheetPath
-        @refreshSelectorsButton.show()
+      @refreshSelectorsButton.show() if element.getAttribute('source-path') is userStylesheetPath
     @subscriptions.add atom.styles.onDidUpdateStyleElement(stylesChanged)
     @subscriptions.add atom.styles.onDidAddStyleElement(stylesChanged)
 
