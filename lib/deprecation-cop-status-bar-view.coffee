@@ -28,8 +28,8 @@ class DeprecationCopStatusBarView extends View
     userStylesheetPath = atom.styles.getUserStyleSheetPath()
     stylesChanged = (element) =>
       @updateDeprecatedSelectorCount() if element.getAttribute('source-path') is userStylesheetPath
-    atom.styles.onDidUpdateStyleElement(stylesChanged)
-    atom.styles.onDidAddStyleElement(stylesChanged)
+    @subscriptions.add atom.styles.onDidUpdateStyleElement(stylesChanged)
+    @subscriptions.add atom.styles.onDidAddStyleElement(stylesChanged)
 
   destroy: ->
     @subscriptions.dispose()
