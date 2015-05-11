@@ -36,6 +36,15 @@ class DeprecationCopView extends ScrollView
     @subscriptions.add atom.packages.onDidActivatePackage (pack) =>
       @refreshSelectorsButton.show() if pack.isTheme()
 
+    @subscriptions.add atom.keymaps.onDidReloadKeymap (event) =>
+      @refreshSelectorsButton.show() if event.path is atom.keymaps.getUserKeymapPath()
+
+    userStylesheetPath = atom.styles.getUserStyleSheetPath()
+    stylesChanged = (element) =>
+      @refreshSelectorsButton.show() if element.getAttribute('source-path') is userStylesheetPath
+    @subscriptions.add atom.styles.onDidUpdateStyleElement(stylesChanged)
+    @subscriptions.add atom.styles.onDidAddStyleElement(stylesChanged)
+
   attached: ->
     @updateCalls()
     @updateSelectors()
@@ -125,6 +134,9 @@ class DeprecationCopView extends ScrollView
       for packageName, packagePath of packagePaths
         relativePath = path.relative(packagePath, fileName)
         return packageName unless /^\.\./.test(relativePath)
+
+      return "Your local #{path.basename(fileName)} file" if atom.getUserInitScriptPath() is fileName
+
     return
 
   createIssueUrl: (packageName, deprecation, stack) ->
@@ -212,9 +224,10 @@ class DeprecationCopView extends ScrollView
                 @a class: 'source-url', href: path.join(deprecations[0].packagePath, sourcePath), sourcePath
                 @ul class: 'list', =>
                   for deprecation in deprecations
-                    @li class: 'list-item', =>
+                    @li class: 'list-item deprecation-detail', =>
                       @span class: 'text-warning icon icon-alert'
-                      @span class: 'list-item deprecation-message', deprecation.message
+                      @div class: 'list-item deprecation-message', =>
+                        @raw marked(deprecation.message)
 
                       @div class: 'btn-toolbar', =>
                         if url = self.createSelectorIssueUrl(packageName, deprecation, sourcePath)

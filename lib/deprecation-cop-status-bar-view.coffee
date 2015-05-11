@@ -22,6 +22,15 @@ class DeprecationCopStatusBarView extends View
     @subscriptions.add atom.packages.onDidUnloadPackage @updateDeprecatedSelectorCount
     @subscriptions.add atom.packages.onDidActivatePackage @updateDeprecatedSelectorCount
 
+    @subscriptions.add atom.keymaps.onDidReloadKeymap (event) =>
+      @updateDeprecatedSelectorCount() if event.path is atom.keymaps.getUserKeymapPath()
+
+    userStylesheetPath = atom.styles.getUserStyleSheetPath()
+    stylesChanged = (element) =>
+      @updateDeprecatedSelectorCount() if element.getAttribute('source-path') is userStylesheetPath
+    @subscriptions.add atom.styles.onDidUpdateStyleElement(stylesChanged)
+    @subscriptions.add atom.styles.onDidAddStyleElement(stylesChanged)
+
   destroy: ->
     @subscriptions.dispose()
     @detach()
