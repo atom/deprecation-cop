@@ -1,4 +1,4 @@
-{Disposable, CompositeDisposable, File} = require 'atom'
+{Disposable, CompositeDisposable} = require 'atom'
 {$, $$, ScrollView} = require 'atom-space-pen-views'
 path = require 'path'
 _ = require 'underscore-plus'
@@ -39,9 +39,12 @@ class DeprecationCopView extends ScrollView
     @subscriptions.add atom.keymaps.onDidReloadKeymap (event) =>
       @refreshSelectorsButton.show() if event.path is atom.keymaps.getUserKeymapPath()
 
-    try
-      userStylesheetFile = new File(atom.styles.getUserStyleSheetPath())
-      @subscriptions.add userStylesheetFile.onDidChange => @refreshSelectorsButton.show()
+    userStylesheetPath = atom.styles.getUserStyleSheetPath()
+    stylesChanged = (element) =>
+      if element.getAttribute('source-path') is userStylesheetPath
+        @refreshSelectorsButton.show()
+    @subscriptions.add atom.styles.onDidUpdateStyleElement(stylesChanged)
+    @subscriptions.add atom.styles.onDidAddStyleElement(stylesChanged)
 
   attached: ->
     @updateCalls()
