@@ -39,6 +39,8 @@ class DeprecationCopView extends ScrollView
     @subscriptions.add atom.styles.onDidUpdateStyleElement(stylesChanged)
     @subscriptions.add atom.styles.onDidAddStyleElement(stylesChanged)
 
+    @debouncedUpdateCalls = _.debounce(@updateCalls, 1000)
+
   attached: ->
     @updateCalls()
     @updateSelectors()
@@ -84,7 +86,7 @@ class DeprecationCopView extends ScrollView
     uri: @getURI()
 
   handleGrimUpdated: =>
-    @updateCalls()
+    @debouncedUpdateCalls()
 
   getURI: ->
     @uri
