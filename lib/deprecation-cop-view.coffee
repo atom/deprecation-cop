@@ -14,16 +14,10 @@ class DeprecationCopView extends ScrollView
     @div class: 'deprecation-cop pane-item native-key-bindings', tabindex: -1, =>
       @div class: 'panel', =>
         @div class: 'panel-heading', =>
-          @div class: 'btn-toolbar pull-right', =>
-            @div class: 'btn-group', =>
-              @button outlet: 'refreshCallsButton', class: 'btn refresh', 'Refresh'
           @span "Deprecated calls"
         @ul outlet: 'list', class: 'list-tree has-collapsable-children'
 
         @div class: 'panel-heading', =>
-          @div class: 'btn-toolbar pull-right', =>
-            @div class: 'btn-group', =>
-              @button outlet: 'refreshSelectorsButton', class: 'btn refresh-selectors', 'Refresh'
           @span "Deprecated selectors"
         @ul outlet: 'selectorList', class: 'selectors list-tree has-collapsable-children'
 
@@ -31,19 +25,21 @@ class DeprecationCopView extends ScrollView
     @subscriptions = new CompositeDisposable
     @subscriptions.add Grim.on 'updated', @handleGrimUpdated
     @subscriptions.add atom.packages.onDidActivateInitialPackages =>
-      @refreshSelectorsButton.show()
+      @updateSelectors()
 
     @subscriptions.add atom.packages.onDidActivatePackage (pack) =>
-      @refreshSelectorsButton.show() if pack.isTheme()
+      @updateSelectors() if pack.isTheme()
 
     @subscriptions.add atom.keymaps.onDidReloadKeymap (event) =>
-      @refreshSelectorsButton.show() if event.path is atom.keymaps.getUserKeymapPath()
+      @updateSelectors() if event.path is atom.keymaps.getUserKeymapPath()
 
     userStylesheetPath = atom.styles.getUserStyleSheetPath()
     stylesChanged = (element) =>
-      @refreshSelectorsButton.show() if element.getAttribute('source-path') is userStylesheetPath
+      @updateSelectors() if element.getAttribute('source-path') is userStylesheetPath
     @subscriptions.add atom.styles.onDidUpdateStyleElement(stylesChanged)
     @subscriptions.add atom.styles.onDidAddStyleElement(stylesChanged)
+
+    @debouncedUpdateCalls = _.debounce(@updateCalls, 1000)
 
   attached: ->
     @updateCalls()
@@ -53,9 +49,6 @@ class DeprecationCopView extends ScrollView
   subscribeToEvents: ->
     # afterAttach is called 2x when dep cop is the active pane item on reload.
     return if @subscribedToEvents
-
-    @refreshCallsButton.on 'click', => @updateCalls()
-    @refreshSelectorsButton.on 'click', => @updateSelectors()
 
     @on 'click', '.deprecation-info', ->
       $(this).parent().toggleClass('collapsed')
@@ -90,10 +83,10 @@ class DeprecationCopView extends ScrollView
 
   serialize: ->
     deserializer: @constructor.name
-    uri: @getUri()
+    uri: @getURI()
 
   handleGrimUpdated: =>
-    @refreshCallsButton.show()
+    @debouncedUpdateCalls()
 
   getURI: ->
     @uri
@@ -159,7 +152,6 @@ class DeprecationCopView extends ScrollView
     "#{repoUrl}/issues/new?title=#{encodeURI(title)}&body=#{encodeURI(body)}"
 
   updateCalls: ->
-    @refreshCallsButton.hide()
     deprecations = Grim.getDeprecations()
     deprecations.sort (a, b) -> b.getCallCount() - a.getCallCount()
     @list.empty()
@@ -174,7 +166,7 @@ class DeprecationCopView extends ScrollView
         packageDeprecations[packageName].push {deprecation, stack}
 
     # I feel guilty about this nested code catastrophe
-    if deprecations.length == 0
+    if deprecations.length is 0
       @list.append $$ ->
         @li class: 'list-item', "No deprecated calls"
     else
@@ -208,11 +200,17 @@ class DeprecationCopView extends ScrollView
                         @a class:'stack-line-location', href: location, location
 
   updateSelectors: ->
-    @refreshSelectorsButton.hide()
     @selectorList.empty()
     self = this
 
-    for packageName, deprecationsByFile of getSelectorDeprecations()
+    deprecations = getSelectorDeprecations()
+
+    if Object.keys(deprecations).length is 0
+      @selectorList.append $$ ->
+        @li class: 'list-item', "No deprecated selectors"
+      return
+
+    for packageName, deprecationsByFile of deprecations
       @selectorList.append $$ ->
         @li class: 'deprecation list-nested-item collapsed', =>
           @div class: 'deprecation-info list-item', =>

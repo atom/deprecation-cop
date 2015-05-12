@@ -8,7 +8,7 @@ describe "DeprecationCop", ->
     activationPromise = atom.packages.activatePackage('deprecation-cop')
 
   describe "when the deprecation-cop:view event is triggered", ->
-    it "displayes deprecation cop pane", ->
+    it "displays deprecation cop pane", ->
       expect(atom.workspace.getActivePane().getActiveItem()).not.toExist()
 
       atom.commands.dispatch workspaceElement, 'deprecation-cop:view'
