@@ -164,7 +164,7 @@ class DeprecationCopView extends ScrollView
         packageDeprecations[packageName].push {deprecation, stack}
 
     # I feel guilty about this nested code catastrophe
-    if deprecations.length == 0
+    if deprecations.length is 0
       @list.append $$ ->
         @li class: 'list-item', "No deprecated calls"
     else
