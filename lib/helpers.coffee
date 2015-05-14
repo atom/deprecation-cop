@@ -1,3 +1,4 @@
+path = require 'path'
 SelectorLinter = require 'atom-selector-linter'
 CSON = require 'season'
 fs = require 'fs-plus'
@@ -5,9 +6,9 @@ fs = require 'fs-plus'
 exports.getSelectorDeprecations = ->
   linter = new SelectorLinter(maxPerPackage: 50)
   linter.checkPackage(pkg) for pkg in atom.packages.getLoadedPackages()
-  
+
   userKeymapPath = atom.keymaps.getUserKeymapPath()
-  
+
   if fs.isFileSync(userKeymapPath)
     try
       userKeymap = CSON.readFileSync(userKeymapPath)
@@ -18,9 +19,9 @@ exports.getSelectorDeprecations = ->
         packagePath: ""
         sourcePath: userKeymapPath
       })
-      
+
   userStyleSheetPath = atom.styles.getUserStyleSheetPath()
-  
+
   if fs.isFileSync(userStyleSheetPath)
     try
       userStyleSheet = fs.readFileSync(userStyleSheetPath, 'utf8')
@@ -31,7 +32,7 @@ exports.getSelectorDeprecations = ->
         packagePath: ""
         sourcePath: userStyleSheetPath
       })
-  
+
   linter.getDeprecations()
 
 exports.getSelectorDeprecationsCount = ->
