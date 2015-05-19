@@ -59,6 +59,8 @@ class DeprecationCopView extends ScrollView
     # afterAttach is called 2x when dep cop is the active pane item on reload.
     return if @subscribedToEvents
 
+    self = this
+
     @openBlogPost.on 'click', =>
       require('shell').openExternal('http://blog.atom.io/2015/05/01/removing-deprecated-apis.html')
       false
@@ -81,23 +83,47 @@ class DeprecationCopView extends ScrollView
       atom.open(pathsToOpen: [pathToOpen])
 
     @on 'click', '.issue-url', ->
-      openExternally = (urlToOpen=@dataset.issueUrl) =>
-        require('shell').openExternal(urlToOpen)
-
-      if process.platform is 'win32'
-        $.ajax 'http://git.io',
-          type: 'POST'
-          data: url: @dataset.issueUrl
-          success: (data, status, xhr) ->
-            openExternally(xhr.getResponseHeader('Location'))
-          error: ->
-            openExternally()
-      else
-        openExternally()
-
+      self.openIssueUrl(@dataset.repoUrl, @dataset.issueUrl, @dataset.issueTitle)
       false
 
     @subscribedToEvents = true
+
+  findSimilarIssues: (repoUrl, issueTitle) ->
+    url = "https://api.github.com/search/issues"
+    repo = repoUrl.replace /http(s)?:\/\/(\d+\.)?github.com\//gi, ''
+    query = "#{issueTitle} repo:#{repo}"
+
+    new Promise (resolve, reject) =>
+      $.ajax "#{url}?q=#{encodeURI(query)}&sort=created",
+        accept: 'application/vnd.github.v3+json'
+        contentType: 'application/json'
+        success: (data) =>
+          if data.items?
+            issues = {}
+            for issue in data.items
+              issues[issue.state] = issue if issue.title.indexOf(issueTitle) > -1 and not issues[issue.state]?
+            return resolve(issues) if issues.open? or issues.closed?
+          resolve(null)
+        error: -> resolve(null)
+
+  openIssueUrl: (repoUrl, issueUrl, issueTitle) ->
+    openExternally = (urlToOpen) =>
+      require('shell').openExternal(urlToOpen)
+
+    @findSimilarIssues(repoUrl, issueTitle).then (issues) ->
+      if issues?.open or issues?.closed
+        issue = issues.open or issues.closed
+        openExternally(issue.html_url)
+      else if process.platform is 'win32'
+        $.ajax 'http://git.io',
+          type: 'POST'
+          data: url: issueUrl
+          success: (data, status, xhr) ->
+            openExternally(xhr.getResponseHeader('Location'))
+          error: ->
+            openExternally(issueUrl)
+      else
+        openExternally(issueUrl)
 
   destroy: ->
     @subscriptions.dispose()
@@ -158,10 +184,14 @@ class DeprecationCopView extends ScrollView
 
     return
 
-  createIssueUrl: (packageName, deprecation, stack) ->
+  getRepoUrl: (packageName) ->
     return unless repo = atom.packages.getLoadedPackage(packageName)?.metadata?.repository
     repoUrl = repo.url ? repo
-    repoUrl = repoUrl.replace(/\.git$/, '')
+    repoUrl.replace(/\.git$/, '')
+
+  createIssueUrl: (packageName, deprecation, stack) ->
+    repoUrl = @getRepoUrl(packageName)
+    return unless repoUrl
 
     title = "#{deprecation.getOriginName()} is deprecated."
     stacktrace = stack.map(({functionName, location}) -> "#{functionName} (#{location})").join("\n")
@@ -169,9 +199,8 @@ class DeprecationCopView extends ScrollView
     "#{repoUrl}/issues/new?title=#{encodeURI(title)}&body=#{encodeURI(body)}"
 
   createSelectorIssueUrl: (packageName, deprecation, sourcePath) ->
-    return unless repo = atom.packages.getLoadedPackage(packageName)?.metadata?.repository
-    repoUrl = repo.url ? repo
-    repoUrl = repoUrl.replace(/\.git$/, '')
+    repoUrl = @getRepoUrl(packageName)
+    return unless repoUrl
 
     title = deprecation.message
     body = "In #{sourcePath}: #{deprecation.message}"
@@ -220,9 +249,11 @@ class DeprecationCopView extends ScrollView
                   @div class: 'list-item deprecation-message', =>
                     @raw marked(deprecation.getMessage())
 
-                  if packageName and url = self.createIssueUrl(packageName, deprecation, stack)
+                  if packageName and issueUrl = self.createIssueUrl(packageName, deprecation, stack)
+                    repoUrl = self.getRepoUrl(packageName)
+                    issueTitle = "#{deprecation.getOriginName()} is deprecated."
                     @div class: 'btn-toolbar', =>
-                      @button class: 'btn issue-url', 'data-issue-url': url, 'Report Issue'
+                      @button class: 'btn issue-url', 'data-issue-title': issueTitle, 'data-repo-url': repoUrl, 'data-issue-url': issueUrl, 'Report Issue'
 
                   @div class: 'stack-trace', =>
                     for {functionName, location, fileName} in stack
@@ -265,6 +296,9 @@ class DeprecationCopView extends ScrollView
                       @div class: 'list-item deprecation-message', =>
                         @raw marked(deprecation.message)
 
-                      if url = self.createSelectorIssueUrl(packageName, deprecation, sourcePath)
+                      if issueUrl = self.createSelectorIssueUrl(packageName, deprecation, sourcePath)
+                        repoUrl = self.getRepoUrl(packageName)
+                        issueTitle = deprecation.message
+
                         @div class: 'btn-toolbar', =>
-                          @button class: 'btn issue-url', 'data-issue-url': url, "Report Issue"
+                          @button class: 'btn issue-url', 'data-issue-title': issueTitle, 'data-repo-url': repoUrl, 'data-issue-url': issueUrl, 'Report Issue'
