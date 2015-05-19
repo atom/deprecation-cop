@@ -146,7 +146,7 @@ class DeprecationCopView extends ScrollView
     return
 
   createIssueUrl: (packageName, deprecation, stack) ->
-    return unless repo = atom.packages.getActivePackage(packageName)?.metadata?.repository
+    return unless repo = atom.packages.getLoadedPackage(packageName)?.metadata?.repository
     repoUrl = repo.url ? repo
     repoUrl = repoUrl.replace(/\.git$/, '')
 
@@ -156,7 +156,7 @@ class DeprecationCopView extends ScrollView
     "#{repoUrl}/issues/new?title=#{encodeURI(title)}&body=#{encodeURI(body)}"
 
   createSelectorIssueUrl: (packageName, deprecation, sourcePath) ->
-    return unless repo = atom.packages.getActivePackage(packageName)?.metadata?.repository
+    return unless repo = atom.packages.getLoadedPackage(packageName)?.metadata?.repository
     repoUrl = repo.url ? repo
     repoUrl = repoUrl.replace(/\.git$/, '')
 
@@ -208,7 +208,6 @@ class DeprecationCopView extends ScrollView
                     @raw marked(deprecation.getMessage())
 
                   @div class: 'btn-toolbar', =>
-                    @span "Called #{_.pluralize(stack.callCount, 'time')}"
                     if packageName and url = self.createIssueUrl(packageName, deprecation, stack)
                       @a class: 'issue-url', href: url, "Create Issue on #{packageName} repo"
 
