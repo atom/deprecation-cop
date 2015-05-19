@@ -13,6 +13,15 @@ class DeprecationCopView extends ScrollView
   @content: ->
     @div class: 'deprecation-cop pane-item native-key-bindings', tabindex: -1, =>
       @div class: 'panel', =>
+        @div class: 'padded deprecation-overview', =>
+          @div class: 'pull-right btn-group', =>
+            @button class: 'btn btn-primary check-for-update', 'Check for Updates'
+
+          @div class: 'text native-key-bindings', tabindex: -1, =>
+            @span class: 'icon icon-question'
+            @span 'Deprecated APIs will be removed when Atom 1.0 is released in June. Please update your packages. '
+            @a class: 'link', outlet: 'openBlogPost', 'Learn more\u2026'
+
         @div class: 'panel-heading', =>
           @span "Deprecated calls"
         @ul outlet: 'list', class: 'list-tree has-collapsable-children'
@@ -49,6 +58,10 @@ class DeprecationCopView extends ScrollView
   subscribeToEvents: ->
     # afterAttach is called 2x when dep cop is the active pane item on reload.
     return if @subscribedToEvents
+
+    @openBlogPost.on 'click', =>
+      require('shell').openExternal('http://blog.atom.io/2015/05/01/removing-deprecated-apis.html')
+      false
 
     @on 'click', '.deprecation-info', ->
       $(this).parent().toggleClass('collapsed')
