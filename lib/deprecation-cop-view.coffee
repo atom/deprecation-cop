@@ -68,19 +68,19 @@ class DeprecationCopView extends ScrollView
       atom.open(pathsToOpen: [pathToOpen])
 
     @on 'click', '.issue-url', ->
-      # win32 can only handle a 2048 length link, so we use the shortener.
-      return if process.platform isnt 'win32'
-
-      openExternally = (urlToOpen=@href) =>
+      openExternally = (urlToOpen=@dataset.issueUrl) =>
         require('shell').openExternal(urlToOpen)
 
-      $.ajax 'http://git.io',
-        type: 'POST'
-        data: url: @href
-        success: (data, status, xhr) ->
-          openExternally(xhr.getResponseHeader('Location'))
-        error: ->
-          openExternally()
+      if process.platform is 'win32'
+        $.ajax 'http://git.io',
+          type: 'POST'
+          data: url: @dataset.issueUrl
+          success: (data, status, xhr) ->
+            openExternally(xhr.getResponseHeader('Location'))
+          error: ->
+            openExternally()
+      else
+        openExternally()
 
       false
 
@@ -207,9 +207,9 @@ class DeprecationCopView extends ScrollView
                   @div class: 'list-item deprecation-message', =>
                     @raw marked(deprecation.getMessage())
 
-                  @div class: 'btn-toolbar', =>
-                    if packageName and url = self.createIssueUrl(packageName, deprecation, stack)
-                      @a class: 'issue-url', href: url, "Create Issue on #{packageName} repo"
+                  if packageName and url = self.createIssueUrl(packageName, deprecation, stack)
+                    @div class: 'btn-toolbar', =>
+                      @button class: 'btn issue-url', 'data-issue-url': url, 'Report Issue'
 
                   @div class: 'stack-trace', =>
                     for {functionName, location, fileName} in stack
@@ -246,6 +246,6 @@ class DeprecationCopView extends ScrollView
                       @div class: 'list-item deprecation-message', =>
                         @raw marked(deprecation.message)
 
-                      @div class: 'btn-toolbar', =>
-                        if url = self.createSelectorIssueUrl(packageName, deprecation, sourcePath)
-                          @a class: 'issue-url', href: url, "Create Issue on #{packageName} repo"
+                      if url = self.createSelectorIssueUrl(packageName, deprecation, sourcePath)
+                        @div class: 'btn-toolbar', =>
+                          @button class: 'btn issue-url', 'data-issue-url': url, "Report Issue"
