@@ -236,6 +236,12 @@ class DeprecationCopView extends ScrollView
             @span class: 'text-highlight', packageName
 
           @ul class: 'list', =>
+            if packageName and atom.packages.getLoadedPackage(packageName)
+              @div class: 'padded', =>
+                @div class: 'btn-group', =>
+                  @button class: 'btn check-for-update', 'Check for Update'
+                  @button class: 'btn disable-package', 'data-package-name': packageName, 'Disable Package'
+
             for sourcePath, deprecations of deprecationsByFile
               @li class: 'list-item source-file', =>
                 @a class: 'source-url', href: path.join(deprecations[0].packagePath, sourcePath), sourcePath
