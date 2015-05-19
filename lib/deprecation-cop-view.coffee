@@ -61,7 +61,7 @@ class DeprecationCopView extends ScrollView
 
     self = this
 
-    @openBlogPost.on 'click', =>
+    @openBlogPost.on 'click', ->
       require('shell').openExternal('http://blog.atom.io/2015/05/01/removing-deprecated-apis.html')
       false
 
@@ -93,7 +93,7 @@ class DeprecationCopView extends ScrollView
     repo = repoUrl.replace /http(s)?:\/\/(\d+\.)?github.com\//gi, ''
     query = "#{issueTitle} repo:#{repo}"
 
-    new Promise (resolve, reject) =>
+    new Promise (resolve, reject) ->
       $.ajax "#{url}?q=#{encodeURI(query)}&sort=created",
         accept: 'application/vnd.github.v3+json'
         contentType: 'application/json'
@@ -108,7 +108,7 @@ class DeprecationCopView extends ScrollView
           resolve(null)
 
   openIssueUrl: (repoUrl, issueUrl, issueTitle) ->
-    openExternally = (urlToOpen) =>
+    openExternally = (urlToOpen) ->
       require('shell').openExternal(urlToOpen)
 
     @findSimilarIssues(repoUrl, issueTitle).then (issues) ->
