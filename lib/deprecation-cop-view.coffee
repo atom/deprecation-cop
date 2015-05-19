@@ -53,6 +53,15 @@ class DeprecationCopView extends ScrollView
     @on 'click', '.deprecation-info', ->
       $(this).parent().toggleClass('collapsed')
 
+    @on 'click', '.check-for-update', ->
+      atom.workspace.open('atom://config/updates')
+      false
+
+    @on 'click', '.disable-package', ->
+      if @dataset.packageName
+        atom.packages.disablePackage(@dataset.packageName)
+      false
+
     @on 'click', '.stack-line-location, .source-url', ->
       pathToOpen = @href.replace('file://', '')
       pathToOpen = pathToOpen.replace(/^\//, '') if process.platform is 'win32'
@@ -184,6 +193,13 @@ class DeprecationCopView extends ScrollView
               @span " (#{_.pluralize(packageDeprecations[packageName].length, 'deprecation')})"
 
             @ul class: 'list', =>
+
+              if packageName and atom.packages.getLoadedPackage(packageName)
+                @div class: 'padded', =>
+                  @div class: 'btn-group', =>
+                    @button class: 'btn check-for-update', 'Check for Update'
+                    @button class: 'btn disable-package', 'data-package-name': packageName, 'Disable Package'
+
               for {deprecation, stack} in packageDeprecations[packageName]
                 @li class: 'list-item deprecation-detail', =>
                   @span class: 'text-warning icon icon-alert'
