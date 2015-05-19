@@ -1,11 +1,19 @@
 Grim = require 'grim'
 
 DeprecationCopView = null
+deprecationCopView = null
 
 viewUri = 'atom://deprecation-cop'
 createView = (state) ->
   DeprecationCopView ?= require './deprecation-cop-view'
-  new DeprecationCopView(state)
+  deprecationCopView ?= new DeprecationCopView(state)
+  deprecationCopView
+
+deserializer =
+  name: 'DeprecationCopView'
+  version: 1
+  deserialize: createView
+atom.deserializers.add(deserializer)
 
 module.exports =
   deprecationCopView: null
@@ -13,19 +21,18 @@ module.exports =
   commandSubscription: null
 
   activate: ->
-    atom.workspace.addOpener (uriToOpen) =>
-      return unless uriToOpen is viewUri
-      @deprecationCopView = createView(uri: uriToOpen)
+    atom.workspace.addOpener (uriToOpen) ->
+      createView(uri: uriToOpen) if uriToOpen is viewUri
 
     @commandSubscription = atom.commands.add 'atom-workspace', 'deprecation-cop:view', ->
       atom.workspace.open(viewUri)
 
   deactivate: ->
-    @deprecationCopView?.destroy()
+    deprecationCopView?.destroy()
     @deprecationCopStatusBarView?.destroy()
     @commandSubscription?.dispose()
 
-    @deprecationCopView = null
+    deprecationCopView = null
     @deprecationCopStatusBarView = null
     @commandSubscription = null
 

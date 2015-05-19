@@ -15,6 +15,14 @@
   -webkit-flex: 1;
   background-color: @app-background-color !important;
 
+  .deprecation-overview {
+    padding: @component-padding*2 @component-padding @component-padding*2 @component-padding;
+
+    .check-for-update {
+      margin-top: -@component-padding/2;
+    }
+  }
+
   .deprecation-info {
     padding: 0 @component-padding;
   }
@@ -29,7 +37,7 @@
     .deprecation-message {
       padding: 5px 0 5px 28px;
       line-height: 1.4;
-      font-size: @font-size + 2px;
+      font-size: @font-size;
 
       p:last-child {
         margin-bottom: 0;
