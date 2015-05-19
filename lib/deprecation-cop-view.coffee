@@ -288,11 +288,11 @@ class DeprecationCopView extends ScrollView
                   @button class: 'btn check-for-update', 'Check for Update'
                   @button class: 'btn disable-package', 'data-package-name': packageName, 'Disable Package'
 
-            for sourcePath, deprecations of deprecationsByFile
+            for sourcePath, deprecationsInFile of deprecationsByFile
               @li class: 'list-item source-file', =>
-                @a class: 'source-url', href: path.join(deprecations[0].packagePath, sourcePath), sourcePath
+                @a class: 'source-url', href: path.join(deprecationsInFile[0].packagePath, sourcePath), sourcePath
                 @ul class: 'list', =>
-                  for deprecation in deprecations
+                  for deprecation in deprecationsInFile
                     @li class: 'list-item deprecation-detail', =>
                       @span class: 'text-warning icon icon-alert'
                       @div class: 'list-item deprecation-message', =>
