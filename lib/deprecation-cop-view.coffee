@@ -93,6 +93,7 @@ class DeprecationCopView extends ScrollView
   serialize: ->
     deserializer: @constructor.name
     uri: @getURI()
+    version: 1
 
   handleGrimUpdated: =>
     @debouncedUpdateCalls()
