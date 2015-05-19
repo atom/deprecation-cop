@@ -104,7 +104,8 @@ class DeprecationCopView extends ScrollView
               issues[issue.state] = issue if issue.title.indexOf(issueTitle) > -1 and not issues[issue.state]?
             return resolve(issues) if issues.open? or issues.closed?
           resolve(null)
-        error: -> resolve(null)
+        error: ->
+          resolve(null)
 
   openIssueUrl: (repoUrl, issueUrl, issueTitle) ->
     openExternally = (urlToOpen) =>
