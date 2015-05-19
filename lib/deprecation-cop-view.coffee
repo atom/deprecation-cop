@@ -280,6 +280,7 @@ class DeprecationCopView extends ScrollView
             @span class: 'text-highlight', packageName
 
           @ul class: 'list', =>
+
             if packageName and atom.packages.getLoadedPackage(packageName)
               @div class: 'padded', =>
                 @div class: 'btn-group', =>
