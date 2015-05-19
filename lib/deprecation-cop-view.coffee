@@ -97,7 +97,7 @@ class DeprecationCopView extends ScrollView
       $.ajax "#{url}?q=#{encodeURI(query)}&sort=created",
         accept: 'application/vnd.github.v3+json'
         contentType: 'application/json'
-        success: (data) =>
+        success: (data) ->
           if data.items?
             issues = {}
             for issue in data.items
