@@ -59,7 +59,7 @@ describe "DeprecationCopView", ->
     packageItems = deprecationCopView.find("ul.selectors > li")
     expect(packageItems.length).toBe(1)
     expect(packageItems.text()).toMatch /No deprecated selectors/
-    
+
     fakePackageDir = path.join(__dirname, "..", "spec", "fixtures", "theme-with-deprecated-selectors")
 
     waitsForPromise ->
@@ -78,17 +78,17 @@ describe "DeprecationCopView", ->
       {
         "functionName": "function0",
         "location": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-viewslib/space-pen.js:55:66",
-        "fileName":  "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-views/lib/space-pen.js",
+        "fileName": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-views/lib/space-pen.js",
       }
       {
         "functionName": "function1",
         "location": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-viewslib/space-pen.js:15:16",
-        "fileName":  "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-views/lib/space-pen.js",
+        "fileName": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-views/lib/space-pen.js",
       },
       {
         "functionName": "function2",
         "location": "/Users/user/.atom/packages/package2/lib/module.js:13:14",
-        "fileName":  "/Users/user/.atom/packages/package2/lib/module.js",
+        "fileName": "/Users/user/.atom/packages/package2/lib/module.js",
       }
     ]
 

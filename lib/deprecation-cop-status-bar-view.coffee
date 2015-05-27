@@ -54,14 +54,14 @@ class DeprecationCopStatusBarView extends View
   update: =>
     length = @getDeprecatedCallCount() + @getDeprecatedSelectorCount()
 
-    return if @lastLength == length
+    return if @lastLength is length
 
     @lastLength = length
     @deprecationNumber.text("#{_.pluralize(length, 'deprecation')}!")
     @toolTipDisposable?.dispose()
     @toolTipDisposable = atom.tooltips.add @element, title: "#{_.pluralize(length, 'call')} to deprecated methods"
 
-    if length == 0
+    if length is 0
       @hide()
     else
       @show()

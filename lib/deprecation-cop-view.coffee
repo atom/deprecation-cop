@@ -261,7 +261,7 @@ class DeprecationCopView extends ScrollView
                       @div class: 'stack-line', =>
                         @span functionName
                         @span " - "
-                        @a class:'stack-line-location', href: location, location
+                        @a class: 'stack-line-location', href: location, location
 
   updateSelectors: ->
     @selectorList.empty()
