@@ -21,7 +21,7 @@ describe "DeprecationCopStatusBarView", ->
 
   it "adds the status bar view when activated", ->
     expect(statusBarView).toExist()
-    expect(statusBarView.textContent).toBe '0 deprecations!'
+    expect(statusBarView.textContent).toBe '0 deprecations'
     expect(statusBarView).not.toShow()
 
   it "increments when there are deprecated methods", ->
@@ -31,40 +31,40 @@ describe "DeprecationCopStatusBarView", ->
     expect(statusBarView).not.toShow()
 
     deprecatedMethod()
-    expect(statusBarView.textContent).toBe '1 deprecation!'
+    expect(statusBarView.textContent).toBe '1 deprecation'
     expect(statusBarView).toShow()
 
     deprecatedMethod()
-    expect(statusBarView.textContent).toBe '2 deprecations!'
+    expect(statusBarView.textContent).toBe '2 deprecations'
     expect(statusBarView).toShow()
 
     anotherDeprecatedMethod()
-    expect(statusBarView.textContent).toBe '3 deprecations!'
+    expect(statusBarView.textContent).toBe '3 deprecations'
     expect(statusBarView).toShow()
 
   it "increments when there are deprecated selectors", ->
     atom.packages.loadPackage(path.join(__dirname, "..", "spec", "fixtures", "package-with-deprecated-selectors"))
 
-    expect(statusBarView.textContent).toBe '3 deprecations!'
+    expect(statusBarView.textContent).toBe '3 deprecations'
     expect(statusBarView).toBeVisible()
 
     atom.packages.unloadPackage('package-with-deprecated-selectors')
 
-    expect(statusBarView.textContent).toBe '0 deprecations!'
+    expect(statusBarView.textContent).toBe '0 deprecations'
     expect(statusBarView).not.toBeVisible()
 
   it "increments when a theme with deprecated selectors is activated", ->
     atom.packages.loadPackage(path.join(__dirname, "..", "spec", "fixtures", "theme-with-deprecated-selectors"))
 
     expect(statusBarView).not.toBeVisible()
-    expect(statusBarView.textContent).toBe '0 deprecations!'
+    expect(statusBarView.textContent).toBe '0 deprecations'
 
     waitsForPromise ->
       atom.packages.activatePackage(path.join(__dirname, "..", "spec", "fixtures", "theme-with-deprecated-selectors"))
 
     runs ->
       expect(statusBarView).toBeVisible()
-      expect(statusBarView.textContent).toBe '1 deprecation!'
+      expect(statusBarView.textContent).toBe '1 deprecation'
 
       atom.packages.deactivatePackage("theme-with-deprecated-selectors")
       atom.packages.unloadPackage("theme-with-deprecated-selectors")
