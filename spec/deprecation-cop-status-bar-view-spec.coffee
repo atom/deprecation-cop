@@ -1,11 +1,17 @@
 path = require 'path'
 Grim = require 'grim'
 DeprecationCopView = require '../lib/deprecation-cop-view'
+_ = require 'underscore-plus'
 
 describe "DeprecationCopStatusBarView", ->
   [deprecatedMethod, statusBarView, workspaceElement] = []
 
   beforeEach ->
+    # jasmine.Clock.useMock() cannot mock _.debounce
+    # http://stackoverflow.com/questions/13707047/spec-for-async-functions-using-jasmine
+    spyOn(_, 'debounce').andCallFake (func) ->
+      -> func.apply(this, arguments)
+
     jasmine.snapshotDeprecations()
 
     workspaceElement = atom.views.getView(atom.workspace)
