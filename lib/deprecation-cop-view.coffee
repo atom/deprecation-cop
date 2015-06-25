@@ -56,10 +56,6 @@ class DeprecationCopView extends ScrollView
 
     self = this
 
-    @openBlogPost.on 'click', ->
-      require('shell').openExternal('http://blog.atom.io/2015/05/01/removing-deprecated-apis.html')
-      false
-
     @on 'click', '.deprecation-info', ->
       $(this).parent().toggleClass('collapsed')
 
