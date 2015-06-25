@@ -17,11 +17,6 @@ class DeprecationCopView extends ScrollView
           @div class: 'pull-right btn-group', =>
             @button class: 'btn btn-primary check-for-update', 'Check for Updates'
 
-          @div class: 'text native-key-bindings', tabindex: -1, =>
-            @span class: 'icon icon-question'
-            @span 'Deprecated APIs will be removed when Atom 1.0 is released in June. Please update your packages. '
-            @a class: 'link', outlet: 'openBlogPost', 'Learn more\u2026'
-
         @div class: 'panel-heading', =>
           @span "Deprecated calls"
         @ul outlet: 'list', class: 'list-tree has-collapsable-children'
