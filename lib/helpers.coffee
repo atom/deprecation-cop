@@ -2,8 +2,9 @@ path = require 'path'
 SelectorLinter = require 'atom-selector-linter'
 CSON = require 'season'
 fs = require 'fs-plus'
+_ = require 'underscore-plus'
 
-exports.getSelectorDeprecations = ->
+exports.getSelectorDeprecations = _.debounce ->
   linter = new SelectorLinter(maxPerPackage: 50)
   linter.checkPackage(pkg) for pkg in atom.packages.getLoadedPackages()
 
@@ -34,11 +35,13 @@ exports.getSelectorDeprecations = ->
       })
 
   linter.getDeprecations()
+, 1000
 
-exports.getSelectorDeprecationsCount = ->
+exports.getSelectorDeprecationsCount = _.debounce ->
   count = 0
   deprecationsByPackageName = exports.getSelectorDeprecations()
   for packageName, deprecationsByFile of deprecationsByPackageName
     for fileName, deprecations of deprecationsByFile
       count += deprecations.length
   count
+, 1000
