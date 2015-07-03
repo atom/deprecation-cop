@@ -77,24 +77,24 @@ describe "DeprecationCopView", ->
     stack = [
       {
         "functionName": "function0",
-        "location": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-viewslib/space-pen.js:55:66",
-        "fileName": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-views/lib/space-pen.js",
+        "location": "#{path.sep}Users#{path.sep}user#{path.sep}.atom#{path.sep}packages#{path.sep}package1#{path.sep}node_modules#{path.sep}atom-space-pen-viewslib#{path.sep}space-pen.js:55:66",
+        "fileName": "#{path.sep}Users#{path.sep}user#{path.sep}.atom#{path.sep}packages#{path.sep}package1#{path.sep}node_modules#{path.sep}atom-space-pen-views#{path.sep}lib#{path.sep}space-pen.js",
       }
       {
         "functionName": "function1",
-        "location": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-viewslib/space-pen.js:15:16",
-        "fileName": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-views/lib/space-pen.js",
+        "location": "#{path.sep}Users#{path.sep}user#{path.sep}.atom#{path.sep}packages#{path.sep}package1#{path.sep}node_modules#{path.sep}atom-space-pen-viewslib#{path.sep}space-pen.js:15:16",
+        "fileName": "#{path.sep}Users#{path.sep}user#{path.sep}.atom#{path.sep}packages#{path.sep}package1#{path.sep}node_modules#{path.sep}atom-space-pen-views#{path.sep}lib#{path.sep}space-pen.js",
       },
       {
         "functionName": "function2",
-        "location": "/Users/user/.atom/packages/package2/lib/module.js:13:14",
-        "fileName": "/Users/user/.atom/packages/package2/lib/module.js",
+        "location": "#{path.sep}Users#{path.sep}user#{path.sep}.atom#{path.sep}packages#{path.sep}package2#{path.sep}lib#{path.sep}module.js:13:14",
+        "fileName": "#{path.sep}Users#{path.sep}user#{path.sep}.atom#{path.sep}packages#{path.sep}package2#{path.sep}lib#{path.sep}module.js",
       }
     ]
 
     packagePathsByPackageName =
-      package1: "/Users/user/.atom/packages/package1"
-      package2: "/Users/user/.atom/packages/package2"
+      package1: "#{path.sep}Users#{path.sep}user#{path.sep}.atom#{path.sep}packages#{path.sep}package1"
+      package2: "#{path.sep}Users#{path.sep}user#{path.sep}.atom#{path.sep}packages#{path.sep}package2"
 
     spyOn(deprecationCopView, 'getPackagePathsByPackageName').andReturn(packagePathsByPackageName)
 
