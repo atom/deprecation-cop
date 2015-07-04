@@ -76,19 +76,19 @@ describe "DeprecationCopView", ->
   it 'skips stack entries which go through node_modules/ files when determining package name', ->
     stack = [
       {
-        "functionName": "function0",
+        "functionName": "function0"
         "location": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-viewslib/space-pen.js:55:66".replace(/\//g, path.sep)
-        "fileName": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-views/lib/space-pen.js".replace(/\//g, path.sep),
+        "fileName": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-views/lib/space-pen.js".replace(/\//g, path.sep)
       }
       {
-        "functionName": "function1",
-        "location": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-viewslib/space-pen.js:15:16".replace(/\//g, path.sep),
-        "fileName": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-views/lib/space-pen.js".replace(/\//g, path.sep),
-      },
+        "functionName": "function1"
+        "location": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-viewslib/space-pen.js:15:16".replace(/\//g, path.sep)
+        "fileName": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-views/lib/space-pen.js".replace(/\//g, path.sep)
+      }
       {
-        "functionName": "function2",
-        "location": "/Users/user/.atom/packages/package2/lib/module.js:13:14".replace(/\//g, path.sep),
-        "fileName": "/Users/user/.atom/packages/package2/lib/module.js".replace(/\//g, path.sep),
+        "functionName": "function2"
+        "location": "/Users/user/.atom/packages/package2/lib/module.js:13:14".replace(/\//g, path.sep)
+        "fileName": "/Users/user/.atom/packages/package2/lib/module.js".replace(/\//g, path.sep)
       }
     ]
 
