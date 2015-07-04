@@ -33,6 +33,8 @@ class DeprecationCopStatusBarView extends View
     @subscriptions.add atom.styles.onDidUpdateStyleElement(stylesChanged)
     @subscriptions.add atom.styles.onDidAddStyleElement(stylesChanged)
 
+    @hide()
+
   destroy: ->
     @subscriptions.dispose()
     @detach()

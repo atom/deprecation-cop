@@ -38,15 +38,15 @@ describe "DeprecationCopStatusBarView", ->
 
     deprecatedMethod()
     expect(statusBarView.textContent).toBe '1 deprecation'
-    expect(statusBarView).toShow()
+    expect(statusBarView).toBeVisible()
 
     deprecatedMethod()
     expect(statusBarView.textContent).toBe '2 deprecations'
-    expect(statusBarView).toShow()
+    expect(statusBarView).toBeVisible()
 
     anotherDeprecatedMethod()
     expect(statusBarView.textContent).toBe '3 deprecations'
-    expect(statusBarView).toShow()
+    expect(statusBarView).toBeVisible()
 
   it "increments when there are deprecated selectors", ->
     atom.packages.loadPackage(path.join(__dirname, "..", "spec", "fixtures", "package-with-deprecated-selectors"))
