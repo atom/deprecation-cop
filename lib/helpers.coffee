@@ -2,8 +2,14 @@ path = require 'path'
 SelectorLinter = require 'atom-selector-linter'
 CSON = require 'season'
 fs = require 'fs-plus'
+_ = require 'underscore-plus'
 
-exports.getSelectorDeprecations = ->
+# disable _.debounce if jasmine is running
+if window.jasmine
+  _.debounce = (func) ->
+    -> func.apply(this, arguments)
+
+getSelectorDeprecations = ->
   linter = new SelectorLinter(maxPerPackage: 50)
   linter.checkPackage(pkg) for pkg in atom.packages.getLoadedPackages()
 
@@ -35,10 +41,13 @@ exports.getSelectorDeprecations = ->
 
   linter.getDeprecations()
 
-exports.getSelectorDeprecationsCount = ->
+getSelectorDeprecationsCount = ->
   count = 0
   deprecationsByPackageName = exports.getSelectorDeprecations()
   for packageName, deprecationsByFile of deprecationsByPackageName
     for fileName, deprecations of deprecationsByFile
       count += deprecations.length
   count
+
+exports.getSelectorDeprecations = _.debounce getSelectorDeprecations, 1000
+exports.getSelectorDeprecationsCount = _.debounce getSelectorDeprecationsCount, 1000
