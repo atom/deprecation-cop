@@ -77,29 +77,24 @@ describe "DeprecationCopView", ->
     stack = [
       {
         "functionName": "function0"
-        "location": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-viewslib/space-pen.js:55:66"
-        "fileName": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-views/lib/space-pen.js"
+        "location": path.normalize "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-viewslib/space-pen.js:55:66"
+        "fileName": path.normalize "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-views/lib/space-pen.js"
       }
       {
         "functionName": "function1"
-        "location": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-viewslib/space-pen.js:15:16"
-        "fileName": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-views/lib/space-pen.js"
+        "location": path.normalize "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-viewslib/space-pen.js:15:16"
+        "fileName": path.normalize "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-views/lib/space-pen.js"
       }
       {
         "functionName": "function2"
-        "location": "/Users/user/.atom/packages/package2/lib/module.js:13:14"
-        "fileName": "/Users/user/.atom/packages/package2/lib/module.js"
+        "location": path.normalize "/Users/user/.atom/packages/package2/lib/module.js:13:14"
+        "fileName": path.normalize "/Users/user/.atom/packages/package2/lib/module.js"
       }
     ]
 
-    # fix path separators on Windows
-    if process.platform is 'win32'
-      for i in [0...stack.length]
-        stack[i][property] = value.replace(/\//g, path.sep) for property, value of stack[i]
-
     packagePathsByPackageName =
-      package1: "/Users/user/.atom/packages/package1"
-      package2: "/Users/user/.atom/packages/package2"
+      package1: path.normalize "/Users/user/.atom/packages/package1"
+      package2: path.normalize "/Users/user/.atom/packages/package2"
 
     spyOn(deprecationCopView, 'getPackagePathsByPackageName').andReturn(packagePathsByPackageName)
 
