@@ -76,25 +76,25 @@ describe "DeprecationCopView", ->
   it 'skips stack entries which go through node_modules/ files when determining package name', ->
     stack = [
       {
-        "functionName": "function0",
-        "location": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-viewslib/space-pen.js:55:66",
-        "fileName": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-views/lib/space-pen.js",
+        "functionName": "function0"
+        "location": path.normalize "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-viewslib/space-pen.js:55:66"
+        "fileName": path.normalize "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-views/lib/space-pen.js"
       }
       {
-        "functionName": "function1",
-        "location": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-viewslib/space-pen.js:15:16",
-        "fileName": "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-views/lib/space-pen.js",
-      },
+        "functionName": "function1"
+        "location": path.normalize "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-viewslib/space-pen.js:15:16"
+        "fileName": path.normalize "/Users/user/.atom/packages/package1/node_modules/atom-space-pen-views/lib/space-pen.js"
+      }
       {
-        "functionName": "function2",
-        "location": "/Users/user/.atom/packages/package2/lib/module.js:13:14",
-        "fileName": "/Users/user/.atom/packages/package2/lib/module.js",
+        "functionName": "function2"
+        "location": path.normalize "/Users/user/.atom/packages/package2/lib/module.js:13:14"
+        "fileName": path.normalize "/Users/user/.atom/packages/package2/lib/module.js"
       }
     ]
 
     packagePathsByPackageName =
-      package1: "/Users/user/.atom/packages/package1"
-      package2: "/Users/user/.atom/packages/package2"
+      package1: path.normalize "/Users/user/.atom/packages/package1"
+      package2: path.normalize "/Users/user/.atom/packages/package2"
 
     spyOn(deprecationCopView, 'getPackagePathsByPackageName').andReturn(packagePathsByPackageName)
 
