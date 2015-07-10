@@ -17,9 +17,11 @@
 
   .deprecation-overview {
     padding: @component-padding*2 @component-padding @component-padding*2 @component-padding;
-
-    .check-for-update {
-      margin-top: -@component-padding/2;
+    
+    &:after {
+      content: '';
+      clear: both;
+      display: block;
     }
   }
 
