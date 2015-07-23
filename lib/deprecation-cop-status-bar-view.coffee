@@ -16,29 +16,31 @@ class DeprecationCopStatusBarView extends View
   toolTipDisposable: null
 
   initialize: ->
-    debouncedUpdateDeprecatedSelectorCount = _.debounce(@updateDeprecatedSelectorCount, 1000)
+    @debouncedUpdateDeprecatedSelectorCount = _.debounce(@updateDeprecatedSelectorCount, 1000)
 
     @subscriptions = new CompositeDisposable
     @subscriptions.add Grim.on 'updated', @update
-    @subscriptions.add atom.packages.onDidLoadPackage debouncedUpdateDeprecatedSelectorCount
-    @subscriptions.add atom.packages.onDidUnloadPackage debouncedUpdateDeprecatedSelectorCount
-    @subscriptions.add atom.packages.onDidActivatePackage debouncedUpdateDeprecatedSelectorCount
+    @subscriptions.add atom.packages.onDidLoadPackage @debouncedUpdateDeprecatedSelectorCount
+    @subscriptions.add atom.packages.onDidUnloadPackage @debouncedUpdateDeprecatedSelectorCount
+    @subscriptions.add atom.packages.onDidActivatePackage @debouncedUpdateDeprecatedSelectorCount
 
     @subscriptions.add atom.keymaps.onDidReloadKeymap (event) =>
-      @updateDeprecatedSelectorCount() if event.path is atom.keymaps.getUserKeymapPath()
+      @debouncedUpdateDeprecatedSelectorCount() if event.path is atom.keymaps.getUserKeymapPath()
 
     userStylesheetPath = atom.styles.getUserStyleSheetPath()
     stylesChanged = (element) =>
-      @updateDeprecatedSelectorCount() if element.getAttribute('source-path') is userStylesheetPath
+      @debouncedUpdateDeprecatedSelectorCount() if element.getAttribute('source-path') is userStylesheetPath
     @subscriptions.add atom.styles.onDidUpdateStyleElement(stylesChanged)
     @subscriptions.add atom.styles.onDidAddStyleElement(stylesChanged)
+
+    @hide()
 
   destroy: ->
     @subscriptions.dispose()
     @detach()
 
   attached: ->
-    @update()
+    @debouncedUpdateDeprecatedSelectorCount()
     @click ->
       workspaceElement = atom.views.getView(atom.workspace)
       atom.commands.dispatch workspaceElement, 'deprecation-cop:view'
