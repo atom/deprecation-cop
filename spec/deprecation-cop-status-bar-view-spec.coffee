@@ -19,7 +19,7 @@ describe "DeprecationCopStatusBarView", ->
     waitsForPromise -> atom.packages.activatePackage('status-bar')
     waitsForPromise -> atom.packages.activatePackage('deprecation-cop')
 
-    runs ->
+    waitsFor ->
       statusBarView = workspaceElement.querySelector('.deprecation-cop-status')
 
   afterEach ->
