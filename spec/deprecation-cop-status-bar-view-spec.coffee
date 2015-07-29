@@ -108,5 +108,5 @@ describe "DeprecationCopStatusBarView", ->
       runs ->
         statusBarView = workspaceElement.querySelector('.deprecation-cop-status')
 
-    it "only adds the status bar view in dev mode", ->
+    it "does not get added to the status bar", ->
       expect(statusBarView).not.toExist()
