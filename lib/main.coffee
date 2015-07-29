@@ -37,6 +37,7 @@ module.exports =
     @commandSubscription = null
 
   consumeStatusBar: (statusBar) ->
-    DeprecationCopStatusBarView = require './deprecation-cop-status-bar-view'
-    @deprecationCopStatusBarView ?= new DeprecationCopStatusBarView()
-    statusBar.addRightTile(item: @deprecationCopStatusBarView, priority: 150)
+    if atom.inDevMode()
+      DeprecationCopStatusBarView = require './deprecation-cop-status-bar-view'
+      @deprecationCopStatusBarView ?= new DeprecationCopStatusBarView()
+      statusBar.addRightTile(item: @deprecationCopStatusBarView, priority: 150)
