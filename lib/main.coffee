@@ -1,28 +1,43 @@
-{Disposable, CompositeDisposable} = require 'atom'
+Grim = require 'grim'
 
-ViewURI = 'atom://deprecation-cop'
 DeprecationCopView = null
+deprecationCopView = null
+
+viewUri = 'atom://deprecation-cop'
+createView = (state) ->
+  DeprecationCopView ?= require './deprecation-cop-view'
+  deprecationCopView ?= new DeprecationCopView(state)
+  deprecationCopView
+
+deserializer =
+  name: 'DeprecationCopView'
+  version: 1
+  deserialize: createView
+atom.deserializers.add(deserializer)
 
 module.exports =
-  disposables: null
+  deprecationCopView: null
+  deprecationCopStatusBarView: null
+  commandSubscription: null
 
   activate: ->
-    @disposables = new CompositeDisposable
-    @disposables.add atom.workspace.addOpener (uri) ->
-      DeprecationCopView ?= require './deprecation-cop-view'
-      new DeprecationCopView({uri}) if uri is ViewURI
-    @disposables.add atom.commands.add 'atom-workspace', 'deprecation-cop:view', ->
-      atom.workspace.open(ViewURI)
+    atom.workspace.addOpener (uriToOpen) ->
+      createView(uri: uriToOpen) if uriToOpen is viewUri
+
+    @commandSubscription = atom.commands.add 'atom-workspace', 'deprecation-cop:view', ->
+      atom.workspace.open(viewUri)
 
   deactivate: ->
-    @disposables.dispose()
-    if pane = atom.workspace.paneForURI(ViewURI)
-      pane.destroyItem(pane.itemForURI(ViewURI))
+    deprecationCopView?.destroy()
+    @deprecationCopStatusBarView?.destroy()
+    @commandSubscription?.dispose()
+
+    deprecationCopView = null
+    @deprecationCopStatusBarView = null
+    @commandSubscription = null
 
   consumeStatusBar: (statusBar) ->
     if atom.inDevMode()
       DeprecationCopStatusBarView = require './deprecation-cop-status-bar-view'
-      statusBarView = new DeprecationCopStatusBarView()
-      statusBarTile = statusBar.addRightTile(item: statusBarView, priority: 150)
-      @disposables.add(new Disposable => statusBarView.destroy())
-      @disposables.add(new Disposable => statusBarTile.destroy())
+      @deprecationCopStatusBarView ?= new DeprecationCopStatusBarView()
+      statusBar.addRightTile(item: @deprecationCopStatusBarView, priority: 150)

@@ -6,10 +6,11 @@ describe "DeprecationCop", ->
   beforeEach ->
     workspaceElement = atom.views.getView(atom.workspace)
     activationPromise = atom.packages.activatePackage('deprecation-cop')
-    expect(atom.workspace.getActivePane().getActiveItem()).not.toExist()
 
   describe "when the deprecation-cop:view event is triggered", ->
-    it "displays the deprecation cop pane", ->
+    it "displays deprecation cop pane", ->
+      expect(atom.workspace.getActivePane().getActiveItem()).not.toExist()
+
       atom.commands.dispatch workspaceElement, 'deprecation-cop:view'
 
       waitsForPromise ->
@@ -18,14 +19,3 @@ describe "DeprecationCop", ->
       runs ->
         deprecationCopView = atom.workspace.getActivePane().getActiveItem()
         expect(deprecationCopView instanceof DeprecationCopView).toBeTruthy()
-
-  describe "deactivating the package", ->
-    it "removes the deprecation cop pane item", ->
-      atom.commands.dispatch workspaceElement, 'deprecation-cop:view'
-
-      waitsForPromise ->
-        activationPromise
-
-      runs ->
-        atom.packages.deactivatePackage('deprecation-cop')
-        expect(atom.workspace.getActivePane().getActiveItem()).not.toExist()
