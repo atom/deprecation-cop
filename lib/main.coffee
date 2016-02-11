@@ -31,3 +31,8 @@ module.exports =
       statusBarTile = statusBar.addRightTile(item: statusBarView, priority: 150)
       @disposables.add(new Disposable => statusBarView.destroy())
       @disposables.add(new Disposable => statusBarTile.destroy())
+
+unless parseFloat(atom.getVersion()) >= 1.7
+  atom.deserializers.add
+    name: 'DeprecationCopView',
+    deserialize: (state) -> module.exports.deserializeDeprecationCopView.bind(module.exports)
