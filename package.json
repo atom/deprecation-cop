@@ -11,8 +11,8 @@
   "dependencies": {
     "atom-space-pen-views": "^2.0.0",
     "fs-plus": "^2.2.0",
-    "grim": "^1.4",
-    "marked": "^0.3",
+    "grim": "^2.0.1",
+    "marked": "^0.3.5",
     "underscore-plus": "^1.0.0",
     "atom-selector-linter": "^0.2.7",
     "season": "^5.1.4"
