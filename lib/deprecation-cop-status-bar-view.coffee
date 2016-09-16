@@ -1,9 +1,9 @@
 {CompositeDisposable} = require 'atom'
-{$, $$, View} = require 'atom-space-pen-views'
+{View} = require 'atom-space-pen-views'
 _ = require 'underscore-plus'
 Grim = require 'grim'
 
-{getSelectorDeprecations, getSelectorDeprecationsCount} = require './helpers'
+{getSelectorDeprecationsCount} = require './helpers'
 
 module.exports =
 class DeprecationCopStatusBarView extends View

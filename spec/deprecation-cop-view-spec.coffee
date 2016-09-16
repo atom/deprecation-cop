@@ -1,5 +1,4 @@
 Grim = require 'grim'
-DeprecationCopView = require '../lib/deprecation-cop-view'
 path = require 'path'
 
 describe "DeprecationCopView", ->
