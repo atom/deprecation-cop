@@ -29,8 +29,8 @@ module.exports =
       DeprecationCopStatusBarView = require './deprecation-cop-status-bar-view'
       statusBarView = new DeprecationCopStatusBarView()
       statusBarTile = statusBar.addRightTile(item: statusBarView, priority: 150)
-      @disposables.add(new Disposable => statusBarView.destroy())
-      @disposables.add(new Disposable => statusBarTile.destroy())
+      @disposables.add(new Disposable -> statusBarView.destroy())
+      @disposables.add(new Disposable -> statusBarTile.destroy())
 
 unless parseFloat(atom.getVersion()) >= 1.7
   atom.deserializers.add

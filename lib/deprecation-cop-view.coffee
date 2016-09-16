@@ -152,15 +152,13 @@ class DeprecationCopView extends ScrollView
     @packagePathsByPackageName
 
   getPackageName: (stack) ->
-    resourcePath = atom.getLoadSettings().resourcePath
-
     packagePaths = @getPackagePathsByPackageName()
     for packageName, packagePath of packagePaths
       if packagePath.indexOf('.atom/dev/packages') > -1 or packagePath.indexOf('.atom/packages') > -1
         packagePaths[packageName] = fs.absolute(packagePath)
 
     for i in [1...stack.length]
-      {functionName, location, fileName} = stack[i]
+      {fileName} = stack[i]
 
       # Empty when it was run from the dev console
       return unless fileName
@@ -248,7 +246,7 @@ class DeprecationCopView extends ScrollView
                       @button class: 'btn issue-url', 'data-issue-title': issueTitle, 'data-repo-url': repoUrl, 'data-issue-url': issueUrl, 'Report Issue'
 
                   @div class: 'stack-trace', =>
-                    for {functionName, location, fileName} in stack
+                    for {functionName, location} in stack
                       @div class: 'stack-line', =>
                         @span functionName
                         @span " - "
