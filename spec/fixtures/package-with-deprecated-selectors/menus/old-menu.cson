@@ -1,3 +1,0 @@
-'context-menu':
-  '.editor':
-    'The Command': "the-namespace:the-command"

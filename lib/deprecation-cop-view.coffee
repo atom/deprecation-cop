@@ -6,8 +6,6 @@ fs = require 'fs-plus'
 Grim = require 'grim'
 marked = require 'marked'
 
-{getSelectorDeprecations} = require './helpers'
-
 module.exports =
 class DeprecationCopView extends ScrollView
   @content: ->
@@ -27,22 +25,8 @@ class DeprecationCopView extends ScrollView
 
   initialize: ({@uri}) ->
     @subscriptions = new CompositeDisposable
-    @subscriptions.add Grim.on 'updated', @handleGrimUpdated
-    @subscriptions.add atom.packages.onDidActivateInitialPackages =>
-      @updateSelectors()
-
-    @subscriptions.add atom.packages.onDidActivatePackage (pack) =>
-      @updateSelectors() if pack.isTheme()
-
-    @subscriptions.add atom.keymaps.onDidReloadKeymap (event) =>
-      @updateSelectors() if event.path is atom.keymaps.getUserKeymapPath()
-
-    userStylesheetPath = atom.styles.getUserStyleSheetPath()
-    stylesChanged = (element) =>
-      @updateSelectors() if element.getAttribute('source-path') is userStylesheetPath
-    @subscriptions.add atom.styles.onDidUpdateStyleElement(stylesChanged)
-    @subscriptions.add atom.styles.onDidAddStyleElement(stylesChanged)
-
+    @subscriptions.add(Grim.on('updated', @handleGrimUpdated))
+    @subscriptions.add(atom.styles.onDidUpdateDeprecations(() => @updateSelectors()))
     @debouncedUpdateCalls = _.debounce(@updateCalls, 1000)
 
   attached: ->
@@ -192,8 +176,8 @@ class DeprecationCopView extends ScrollView
     repoUrl = @getRepoUrl(packageName)
     return unless repoUrl
 
-    title = deprecation.message
-    body = "In #{sourcePath}: #{deprecation.message}"
+    title = "Selector Deprecation in #{sourcePath}"
+    body = "In `#{sourcePath}`: \n\n#{deprecation.message}"
     "#{repoUrl}/issues/new?title=#{encodeURI(title)}&body=#{encodeURI(body)}"
 
   updateCalls: ->
@@ -256,40 +240,53 @@ class DeprecationCopView extends ScrollView
     @selectorList.empty()
     self = this
 
-    deprecations = getSelectorDeprecations()
-
-    if Object.keys(deprecations).length is 0
+    deprecationsByPackageName = @getSelectorDeprecationsByPackageName()
+    if deprecationsByPackageName.size is 0
       @selectorList.append $$ ->
         @li class: 'list-item', "No deprecated selectors"
       return
 
-    for packageName, deprecationsByFile of deprecations
+    for packageName, packageDeprecations of deprecationsByPackageName
       @selectorList.append $$ ->
         @li class: 'deprecation list-nested-item collapsed', =>
           @div class: 'deprecation-info list-item', =>
             @span class: 'text-highlight', packageName
 
           @ul class: 'list', =>
-
             if packageName and atom.packages.getLoadedPackage(packageName)
               @div class: 'padded', =>
                 @div class: 'btn-group', =>
                   @button class: 'btn check-for-update', 'Check for Update'
                   @button class: 'btn disable-package', 'data-package-name': packageName, 'Disable Package'
 
-            for sourcePath, deprecationsInFile of deprecationsByFile
+            for {packagePath, sourcePath, deprecation} in packageDeprecations
+              relativeSourcePath = path.relative(packagePath, sourcePath)
               @li class: 'list-item source-file', =>
-                @a class: 'source-url', href: path.join(deprecationsInFile[0].packagePath, sourcePath), sourcePath
+                @a class: 'source-url', href: sourcePath, relativeSourcePath
                 @ul class: 'list', =>
-                  for deprecation in deprecationsInFile
-                    @li class: 'list-item deprecation-detail', =>
-                      @span class: 'text-warning icon icon-alert'
-                      @div class: 'list-item deprecation-message', =>
-                        @raw marked(deprecation.message)
+                  @li class: 'list-item deprecation-detail', =>
+                    @span class: 'text-warning icon icon-alert'
+                    @div class: 'list-item deprecation-message', =>
+                      @raw marked(deprecation.message)
 
-                      if issueUrl = self.createSelectorIssueUrl(packageName, deprecation, sourcePath)
-                        repoUrl = self.getRepoUrl(packageName)
-                        issueTitle = deprecation.message
+                    if issueUrl = self.createSelectorIssueUrl(packageName, deprecation, relativeSourcePath)
+                      repoUrl = self.getRepoUrl(packageName)
+                      issueTitle = "Selectors Deprecation in #{relativeSourcePath}"
+                      @div class: 'btn-toolbar', =>
+                        @button class: 'btn issue-url', 'data-issue-title': issueTitle, 'data-repo-url': repoUrl, 'data-issue-url': issueUrl, 'Report Issue'
 
-                        @div class: 'btn-toolbar', =>
-                          @button class: 'btn issue-url', 'data-issue-title': issueTitle, 'data-repo-url': repoUrl, 'data-issue-url': issueUrl, 'Report Issue'
+  getSelectorDeprecationsByPackageName: ->
+    deprecationsByPackageName = {}
+    for sourcePath, deprecation of atom.styles.getDeprecations()
+      components = sourcePath.split(path.sep)
+      packagesComponentIndex = components.indexOf('packages')
+      if packagesComponentIndex isnt -1
+        packageName = components[packagesComponentIndex + 1]
+        packagePath = components.slice(0, packagesComponentIndex + 1).join(path.sep)
+      else
+        packageName = 'Atom Core'
+        packagePath = ''
+
+      deprecationsByPackageName[packageName] ?= []
+      deprecationsByPackageName[packageName].push({packagePath, sourcePath, deprecation})
+    deprecationsByPackageName
