@@ -48,17 +48,19 @@ describe "DeprecationCopStatusBarView", ->
     expect(statusBarView.textContent).toBe '3 deprecations'
     expect(statusBarView).toShow()
 
-  it "increments when there are deprecated selectors", ->
-    atom.styles.addStyleSheet("""
-    atom-text-editor::shadow { color: red; }
-    """, sourcePath: 'file-1')
-    expect(statusBarView.textContent).toBe '1 deprecation'
-    expect(statusBarView).toBeVisible()
-    atom.styles.addStyleSheet("""
-    atom-text-editor::shadow { color: blue; }
-    """, sourcePath: 'file-2')
-    expect(statusBarView.textContent).toBe '2 deprecations'
-    expect(statusBarView).toBeVisible()
+  # TODO: Remove conditional when the new StyleManager deprecation APIs reach stable.
+  if atom.styles.getDeprecations?
+    it "increments when there are deprecated selectors", ->
+      atom.styles.addStyleSheet("""
+      atom-text-editor::shadow { color: red; }
+      """, sourcePath: 'file-1')
+      expect(statusBarView.textContent).toBe '1 deprecation'
+      expect(statusBarView).toBeVisible()
+      atom.styles.addStyleSheet("""
+      atom-text-editor::shadow { color: blue; }
+      """, sourcePath: 'file-2')
+      expect(statusBarView.textContent).toBe '2 deprecations'
+      expect(statusBarView).toBeVisible()
 
   it 'opens deprecation cop tab when clicked', ->
     expect(atom.workspace.getActivePane().getActiveItem()).not.toExist()

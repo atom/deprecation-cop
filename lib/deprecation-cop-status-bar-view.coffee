@@ -18,7 +18,9 @@ class DeprecationCopStatusBarView extends View
 
     @subscriptions = new CompositeDisposable
     @subscriptions.add Grim.on 'updated', @update
-    @subscriptions.add(atom.styles.onDidUpdateDeprecations(debouncedUpdateDeprecatedSelectorCount))
+    # TODO: Remove conditional when the new StyleManager deprecation APIs reach stable.
+    if atom.styles.onDidUpdateDeprecations?
+      @subscriptions.add(atom.styles.onDidUpdateDeprecations(debouncedUpdateDeprecatedSelectorCount))
 
   destroy: ->
     @subscriptions.dispose()
@@ -33,8 +35,15 @@ class DeprecationCopStatusBarView extends View
   getDeprecatedCallCount: ->
     Grim.getDeprecations().map((d) -> d.getStackCount()).reduce(((a, b) -> a + b), 0)
 
+  getDeprecatedStylesheetsCount: ->
+    # TODO: Remove conditional when the new StyleManager deprecation APIs reach stable.
+    if atom.styles.getDeprecations?
+      Object.keys(atom.styles.getDeprecations()).length
+    else
+      0
+
   update: =>
-    length = @getDeprecatedCallCount() + Object.keys(atom.styles.getDeprecations()).length
+    length = @getDeprecatedCallCount() + @getDeprecatedStylesheetsCount()
 
     return if @lastLength is length
 

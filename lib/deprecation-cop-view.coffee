@@ -26,7 +26,9 @@ class DeprecationCopView extends ScrollView
   initialize: ({@uri}) ->
     @subscriptions = new CompositeDisposable
     @subscriptions.add(Grim.on('updated', @handleGrimUpdated))
-    @subscriptions.add(atom.styles.onDidUpdateDeprecations(() => @updateSelectors()))
+    # TODO: Remove conditional when the new StyleManager deprecation APIs reach stable.
+    if atom.styles.onDidUpdateDeprecations?
+      @subscriptions.add(atom.styles.onDidUpdateDeprecations(() => @updateSelectors()))
     @debouncedUpdateCalls = _.debounce(@updateCalls, 1000)
 
   attached: ->
@@ -276,17 +278,21 @@ class DeprecationCopView extends ScrollView
                         @button class: 'btn issue-url', 'data-issue-title': issueTitle, 'data-repo-url': repoUrl, 'data-issue-url': issueUrl, 'Report Issue'
 
   getSelectorDeprecationsByPackageName: ->
-    deprecationsByPackageName = {}
-    for sourcePath, deprecation of atom.styles.getDeprecations()
-      components = sourcePath.split(path.sep)
-      packagesComponentIndex = components.indexOf('packages')
-      if packagesComponentIndex isnt -1
-        packageName = components[packagesComponentIndex + 1]
-        packagePath = components.slice(0, packagesComponentIndex + 1).join(path.sep)
-      else
-        packageName = 'Atom Core'
-        packagePath = ''
+    # TODO: Remove conditional when the new StyleManager deprecation APIs reach stable.
+    if atom.styles.getDeprecations?
+      deprecationsByPackageName = {}
+      for sourcePath, deprecation of atom.styles.getDeprecations()
+        components = sourcePath.split(path.sep)
+        packagesComponentIndex = components.indexOf('packages')
+        if packagesComponentIndex isnt -1
+          packageName = components[packagesComponentIndex + 1]
+          packagePath = components.slice(0, packagesComponentIndex + 1).join(path.sep)
+        else
+          packageName = 'Atom Core'
+          packagePath = ''
 
-      deprecationsByPackageName[packageName] ?= []
-      deprecationsByPackageName[packageName].push({packagePath, sourcePath, deprecation})
-    deprecationsByPackageName
+        deprecationsByPackageName[packageName] ?= []
+        deprecationsByPackageName[packageName].push({packagePath, sourcePath, deprecation})
+      deprecationsByPackageName
+    else
+      {}

@@ -36,24 +36,26 @@ describe "DeprecationCopView", ->
     expect(deprecationCopView.html()).toMatch /Deprecated calls/
     expect(deprecationCopView.html()).toMatch /This isn't used/
 
-  it "displays deprecated selectors", ->
-    atom.styles.addStyleSheet("atom-text-editor::shadow { color: red }", sourcePath: path.join('some-dir', 'packages', 'package-1', 'file-1.css'))
-    atom.styles.addStyleSheet("atom-text-editor::shadow { color: yellow }", context: 'atom-text-editor', sourcePath: path.join('some-dir', 'packages', 'package-1', 'file-2.css'))
-    atom.styles.addStyleSheet('atom-text-editor::shadow { color: blue }', sourcePath: path.join('another-dir', 'packages', 'package-2', 'file-3.css'))
-    atom.styles.addStyleSheet('atom-text-editor::shadow { color: gray }', sourcePath: path.join('another-dir', 'node_modules', 'package-3', 'file-4.css'))
+  # TODO: Remove conditional when the new StyleManager deprecation APIs reach stable.
+  if atom.styles.getDeprecations?
+    it "displays deprecated selectors", ->
+      atom.styles.addStyleSheet("atom-text-editor::shadow { color: red }", sourcePath: path.join('some-dir', 'packages', 'package-1', 'file-1.css'))
+      atom.styles.addStyleSheet("atom-text-editor::shadow { color: yellow }", context: 'atom-text-editor', sourcePath: path.join('some-dir', 'packages', 'package-1', 'file-2.css'))
+      atom.styles.addStyleSheet('atom-text-editor::shadow { color: blue }', sourcePath: path.join('another-dir', 'packages', 'package-2', 'file-3.css'))
+      atom.styles.addStyleSheet('atom-text-editor::shadow { color: gray }', sourcePath: path.join('another-dir', 'node_modules', 'package-3', 'file-4.css'))
 
-    packageItems = deprecationCopView.find("ul.selectors > li")
-    expect(packageItems.length).toBe(3)
-    expect(packageItems.eq(0).html()).toMatch /package-1/
-    expect(packageItems.eq(1).html()).toMatch /package-2/
-    expect(packageItems.eq(2).html()).toMatch /Atom Core/
+      packageItems = deprecationCopView.find("ul.selectors > li")
+      expect(packageItems.length).toBe(3)
+      expect(packageItems.eq(0).html()).toMatch /package-1/
+      expect(packageItems.eq(1).html()).toMatch /package-2/
+      expect(packageItems.eq(2).html()).toMatch /Atom Core/
 
-    packageDeprecationItems = packageItems.eq(0).find("li.source-file")
-    expect(packageDeprecationItems.length).toBe(2)
-    expect(packageDeprecationItems.eq(0).text()).toMatch /atom-text-editor/
-    expect(packageDeprecationItems.eq(0).find("a").attr("href")).toBe(path.join('some-dir', 'packages', 'package-1', 'file-1.css'))
-    expect(packageDeprecationItems.eq(1).text()).toMatch /:host/
-    expect(packageDeprecationItems.eq(1).find("a").attr("href")).toBe(path.join('some-dir', 'packages', 'package-1', 'file-2.css'))
+      packageDeprecationItems = packageItems.eq(0).find("li.source-file")
+      expect(packageDeprecationItems.length).toBe(2)
+      expect(packageDeprecationItems.eq(0).text()).toMatch /atom-text-editor/
+      expect(packageDeprecationItems.eq(0).find("a").attr("href")).toBe(path.join('some-dir', 'packages', 'package-1', 'file-1.css'))
+      expect(packageDeprecationItems.eq(1).text()).toMatch /:host/
+      expect(packageDeprecationItems.eq(1).find("a").attr("href")).toBe(path.join('some-dir', 'packages', 'package-1', 'file-2.css'))
 
   it 'skips stack entries which go through node_modules/ files when determining package name', ->
     stack = [
