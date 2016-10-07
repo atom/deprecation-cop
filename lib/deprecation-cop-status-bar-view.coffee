@@ -35,7 +35,7 @@ class DeprecationCopStatusBarView extends View
   getDeprecatedCallCount: ->
     Grim.getDeprecations().map((d) -> d.getStackCount()).reduce(((a, b) -> a + b), 0)
 
-  getDeprecatedStylesheetsCount: ->
+  getDeprecatedStyleSheetsCount: ->
     # TODO: Remove conditional when the new StyleManager deprecation APIs reach stable.
     if atom.styles.getDeprecations?
       Object.keys(atom.styles.getDeprecations()).length
@@ -43,7 +43,7 @@ class DeprecationCopStatusBarView extends View
       0
 
   update: =>
-    length = @getDeprecatedCallCount() + @getDeprecatedStylesheetsCount()
+    length = @getDeprecatedCallCount() + @getDeprecatedStyleSheetsCount()
 
     return if @lastLength is length
 

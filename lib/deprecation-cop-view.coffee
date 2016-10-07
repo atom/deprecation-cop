@@ -174,13 +174,12 @@ class DeprecationCopView extends ScrollView
     body = "#{deprecation.getMessage()}\n```\n#{stacktrace}\n```"
     "#{repoUrl}/issues/new?title=#{encodeURI(title)}&body=#{encodeURI(body)}"
 
-  createSelectorIssueUrl: (packageName, deprecation, sourcePath) ->
+  createSelectorIssueUrl: (packageName, title, body) ->
     repoUrl = @getRepoUrl(packageName)
-    return unless repoUrl
-
-    title = "Selector Deprecation in #{sourcePath}"
-    body = "In `#{sourcePath}`: \n\n#{deprecation.message}"
-    "#{repoUrl}/issues/new?title=#{encodeURI(title)}&body=#{encodeURI(body)}"
+    if repoUrl
+      "#{repoUrl}/issues/new?title=#{encodeURI(title)}&body=#{encodeURI(body)}"
+    else
+      null
 
   updateCalls: ->
     deprecations = Grim.getDeprecations()
@@ -271,9 +270,10 @@ class DeprecationCopView extends ScrollView
                     @div class: 'list-item deprecation-message', =>
                       @raw marked(deprecation.message)
 
-                    if issueUrl = self.createSelectorIssueUrl(packageName, deprecation, relativeSourcePath)
+                    issueTitle = "Deprecated selector in `#{relativeSourcePath}`"
+                    issueBody = "In `#{relativeSourcePath}`: \n\n#{deprecation.message}"
+                    if issueUrl = self.createSelectorIssueUrl(packageName, issueTitle, issueBody)
                       repoUrl = self.getRepoUrl(packageName)
-                      issueTitle = "Selectors Deprecation in #{relativeSourcePath}"
                       @div class: 'btn-toolbar', =>
                         @button class: 'btn issue-url', 'data-issue-title': issueTitle, 'data-repo-url': repoUrl, 'data-issue-url': issueUrl, 'Report Issue'
 
@@ -288,7 +288,7 @@ class DeprecationCopView extends ScrollView
           packageName = components[packagesComponentIndex + 1]
           packagePath = components.slice(0, packagesComponentIndex + 1).join(path.sep)
         else
-          packageName = 'Atom Core'
+          packageName = 'Other' # could be Atom Core or the personal style sheet
           packagePath = ''
 
         deprecationsByPackageName[packageName] ?= []
