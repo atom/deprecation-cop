@@ -28,7 +28,7 @@ class DeprecationCopView extends ScrollView
     @subscriptions.add(Grim.on('updated', @handleGrimUpdated))
     # TODO: Remove conditional when the new StyleManager deprecation APIs reach stable.
     if atom.styles.onDidUpdateDeprecations?
-      @subscriptions.add(atom.styles.onDidUpdateDeprecations(() => @updateSelectors()))
+      @subscriptions.add(atom.styles.onDidUpdateDeprecations(=> @updateSelectors()))
     @debouncedUpdateCalls = _.debounce(@updateCalls, 1000)
 
   attached: ->
