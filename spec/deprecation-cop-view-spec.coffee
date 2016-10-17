@@ -48,7 +48,7 @@ describe "DeprecationCopView", ->
       expect(packageItems.length).toBe(3)
       expect(packageItems.eq(0).html()).toMatch /package-1/
       expect(packageItems.eq(1).html()).toMatch /package-2/
-      expect(packageItems.eq(2).html()).toMatch /Atom Core/
+      expect(packageItems.eq(2).html()).toMatch /Other/
 
       packageDeprecationItems = packageItems.eq(0).find("li.source-file")
       expect(packageDeprecationItems.length).toBe(2)
