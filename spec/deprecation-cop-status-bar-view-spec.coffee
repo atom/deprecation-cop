@@ -34,19 +34,19 @@ describe "DeprecationCopStatusBarView", ->
     deprecatedMethod = -> Grim.deprecate("This isn't used")
     anotherDeprecatedMethod = -> Grim.deprecate("This either")
     expect(statusBarView.style.display).toBe 'none'
-    expect(statusBarView).not.toShow()
+    expect(statusBarView.offsetHeight).toBe(0)
 
     deprecatedMethod()
     expect(statusBarView.textContent).toBe '1 deprecation'
-    expect(statusBarView).toShow()
+    expect(statusBarView.offsetHeight).toBeGreaterThan(0)
 
     deprecatedMethod()
     expect(statusBarView.textContent).toBe '2 deprecations'
-    expect(statusBarView).toShow()
+    expect(statusBarView.offsetHeight).toBeGreaterThan(0)
 
     anotherDeprecatedMethod()
     expect(statusBarView.textContent).toBe '3 deprecations'
-    expect(statusBarView).toShow()
+    expect(statusBarView.offsetHeight).toBeGreaterThan(0)
 
   # TODO: Remove conditional when the new StyleManager deprecation APIs reach stable.
   if atom.styles.getDeprecations?
