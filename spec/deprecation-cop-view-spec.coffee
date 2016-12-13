@@ -58,9 +58,9 @@ describe "DeprecationCopView", ->
         packageDeprecationItems = packageItems[0].querySelectorAll("li.source-file")
         expect(packageDeprecationItems.length).toBe(2)
         expect(packageDeprecationItems[0].textContent).toMatch /atom-text-editor/
-        expect(packageDeprecationItems[0].querySelector("a").href).toMatch(path.join('some-dir', 'packages', 'package-1', 'file-1.css'))
+        expect(packageDeprecationItems[0].querySelector("a").href).toMatch('some-dir/packages/package-1/file-1.css')
         expect(packageDeprecationItems[1].textContent).toMatch /:host/
-        expect(packageDeprecationItems[1].querySelector("a").href).toMatch(path.join('some-dir', 'packages', 'package-1', 'file-2.css'))
+        expect(packageDeprecationItems[1].querySelector("a").href).toMatch('some-dir/packages/package-1/file-2.css')
 
   it 'skips stack entries which go through node_modules/ files when determining package name', ->
     stack = [
