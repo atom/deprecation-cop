@@ -27,7 +27,7 @@ class DeprecationCopStatusBarView
       workspaceElement = atom.views.getView(atom.workspace)
       atom.commands.dispatch workspaceElement, 'deprecation-cop:view'
     @element.addEventListener('click', clickHandler)
-    @subscriptions.add(new Disposable(() => @element.removeEventListener('click', clickHandler)))
+    @subscriptions.add(new Disposable(=> @element.removeEventListener('click', clickHandler)))
 
     @update()
 
