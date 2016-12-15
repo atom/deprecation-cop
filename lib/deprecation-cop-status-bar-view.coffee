@@ -1,22 +1,38 @@
-{CompositeDisposable} = require 'atom'
-{View} = require 'atom-space-pen-views'
+{CompositeDisposable, Disposable} = require 'atom'
 _ = require 'underscore-plus'
 Grim = require 'grim'
 
 module.exports =
-class DeprecationCopStatusBarView extends View
-  @content: ->
-    @div class: 'deprecation-cop-status inline-block text-warning', tabindex: -1, =>
-      @span class: 'icon icon-alert'
-      @span class: 'deprecation-number', outlet: 'deprecationNumber', '0'
-
+class DeprecationCopStatusBarView
   lastLength: null
   toolTipDisposable: null
 
-  initialize: ->
+  constructor: ->
+    @subscriptions = new CompositeDisposable
+
+    @element = document.createElement('div')
+    @element.classList.add('deprecation-cop-status', 'inline-block', 'text-warning')
+    @element.setAttribute('tabindex', -1)
+
+    @icon = document.createElement('span')
+    @icon.classList.add('icon', 'icon-alert')
+    @element.appendChild(@icon)
+
+    @deprecationNumber = document.createElement('span')
+    @deprecationNumber.classList.add('deprecation-number')
+    @deprecationNumber.textContent = '0'
+    @element.appendChild(@deprecationNumber)
+
+    clickHandler = ->
+      workspaceElement = atom.views.getView(atom.workspace)
+      atom.commands.dispatch workspaceElement, 'deprecation-cop:view'
+    @element.addEventListener('click', clickHandler)
+    @subscriptions.add(new Disposable(=> @element.removeEventListener('click', clickHandler)))
+
+    @update()
+
     debouncedUpdateDeprecatedSelectorCount = _.debounce(@update, 1000)
 
-    @subscriptions = new CompositeDisposable
     @subscriptions.add Grim.on 'updated', @update
     # TODO: Remove conditional when the new StyleManager deprecation APIs reach stable.
     if atom.styles.onDidUpdateDeprecations?
@@ -24,13 +40,7 @@ class DeprecationCopStatusBarView extends View
 
   destroy: ->
     @subscriptions.dispose()
-    @detach()
-
-  attached: ->
-    @update()
-    @click ->
-      workspaceElement = atom.views.getView(atom.workspace)
-      atom.commands.dispatch workspaceElement, 'deprecation-cop:view'
+    @element.remove()
 
   getDeprecatedCallCount: ->
     Grim.getDeprecations().map((d) -> d.getStackCount()).reduce(((a, b) -> a + b), 0)
@@ -48,11 +58,11 @@ class DeprecationCopStatusBarView extends View
     return if @lastLength is length
 
     @lastLength = length
-    @deprecationNumber.text("#{_.pluralize(length, 'deprecation')}")
+    @deprecationNumber.textContent = "#{_.pluralize(length, 'deprecation')}"
     @toolTipDisposable?.dispose()
     @toolTipDisposable = atom.tooltips.add @element, title: "#{_.pluralize(length, 'call')} to deprecated methods"
 
     if length is 0
-      @hide()
+      @element.style.display = 'none'
     else
-      @show()
+      @element.style.display = ''
