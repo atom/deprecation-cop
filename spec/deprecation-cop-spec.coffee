@@ -15,8 +15,11 @@ describe "DeprecationCop", ->
       waitsForPromise ->
         activationPromise
 
-      runs ->
+      deprecationCopView = null
+      waitsFor ->
         deprecationCopView = atom.workspace.getActivePane().getActiveItem()
+
+      runs ->
         expect(deprecationCopView instanceof DeprecationCopView).toBeTruthy()
 
   describe "deactivating the package", ->

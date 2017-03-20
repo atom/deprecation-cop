@@ -26,9 +26,10 @@ describe "DeprecationCopView", ->
     waitsForPromise ->
       activationPromise
 
+    waitsFor -> deprecationCopView = atom.workspace.getActivePane().getActiveItem()
+
     runs ->
       jasmine.unspy(Grim, 'deprecate')
-      deprecationCopView = atom.workspace.getActivePane().getActiveItem()
 
   afterEach ->
     jasmine.restoreDeprecationsSnapshot()
