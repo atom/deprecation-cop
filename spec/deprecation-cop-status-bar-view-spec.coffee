@@ -64,9 +64,9 @@ describe "DeprecationCopStatusBarView", ->
 
   it 'opens deprecation cop tab when clicked', ->
     expect(atom.workspace.getActivePane().getActiveItem()).not.toExist()
-    statusBarView.click()
 
-    waits 0
-    runs ->
-      depCopView = atom.workspace.getActivePane().getActiveItem()
-      expect(depCopView instanceof DeprecationCopView).toBe true
+    waitsFor (done) ->
+      atom.workspace.onDidOpen ({item}) ->
+        expect(item instanceof DeprecationCopView).toBe true
+        done()
+      statusBarView.click()
