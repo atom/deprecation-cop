@@ -46,8 +46,8 @@ describe "DeprecationCopView", ->
       atom.styles.addStyleSheet('atom-text-editor::shadow { color: blue }', sourcePath: path.join('another-dir', 'packages', 'package-2', 'file-3.css'))
       atom.styles.addStyleSheet('atom-text-editor::shadow { color: gray }', sourcePath: path.join('another-dir', 'node_modules', 'package-3', 'file-4.css'))
 
-      waitsForPromise ->
-        etch.getScheduler().getNextUpdatePromise()
+      promise = etch.getScheduler().getNextUpdatePromise()
+      waitsForPromise -> promise
 
       runs ->
         packageItems = deprecationCopView.element.querySelectorAll("ul.selectors > li")
