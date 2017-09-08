@@ -29,6 +29,8 @@ describe "DeprecationCop", ->
       waitsForPromise ->
         activationPromise
 
+      waitsForPromise ->
+        Promise.resolve(atom.packages.deactivatePackage('deprecation-cop')) # Wrapped for Promise & non-Promise deactivate
+
       runs ->
-        atom.packages.deactivatePackage('deprecation-cop')
         expect(atom.workspace.getActivePane().getActiveItem()).not.toExist()
