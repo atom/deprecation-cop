@@ -1,3 +1,7 @@
+### This package is now a part of the [core Atom repository](https://github.com/atom/atom/tree/master/packages/deprecation-cop), please direct all issues and pull requests there in the future!
+
+---
+
 # Deprecation Cop package
 [![OS X Build Status](https://travis-ci.org/atom/deprecation-cop.svg?branch=master)](https://travis-ci.org/atom/deprecation-cop) [![Windows Build Status](https://ci.appveyor.com/api/projects/status/0s870q5fj3vwihjx/branch/master?svg=true)](https://ci.appveyor.com/project/Atom/deprecation-cop/branch/master) [![Dependency Status](https://david-dm.org/atom/deprecation-cop.svg)](https://david-dm.org/atom/deprecation-cop)
 
